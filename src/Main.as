@@ -7,11 +7,11 @@ void Main()
     {
         @g_LiveSplitDevWindow = LiveSplitDevWindow();
         @g_LiveSplit = LiveSplitClient();
-        waitForLiveSplitData();
+        startnew(waitForLiveSplitData);
     }
     else
     {
-        waitForEnableLiveSplit();
+        startnew(waitForEnableLiveSplit);
     }
 }
 
@@ -45,7 +45,7 @@ void waitForLiveSplitData()
             @g_LiveSplitDevWindow = null;
 
             // start the wait for enable LS
-            waitForEnableLiveSplit();
+            startnew(waitForEnableLiveSplit);
 
             // then break out of the loop
             break;
@@ -76,7 +76,7 @@ void waitForEnableLiveSplit()
             // init the classes
             @g_LiveSplitDevWindow = LiveSplitDevWindow();
             @g_LiveSplit = LiveSplitClient();
-            waitForLiveSplitData();
+            startnew(waitForLiveSplitData);
             // then break out of the loop
             break;
         }

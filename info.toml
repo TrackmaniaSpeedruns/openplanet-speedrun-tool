@@ -6,4 +6,6 @@ category = "Speedrun"
 version = "1.0"
 
 [script]
+dependencies = [ "PlayerState" ]
+
 timeout = 0

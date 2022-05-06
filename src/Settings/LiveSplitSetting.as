@@ -12,11 +12,14 @@ namespace PluginSettings
     [Setting hidden]
     bool LiveSplitStartTimerOnSpawn = true;
 
-    [Setting hidden]
-    bool LiveSplitSplitOnFinish = true;
+    array<string> LiveSplitSplitOnSettings = {
+        "Finish",
+        "Checkpoint",
+        "No split"
+    };
 
     [Setting hidden]
-    bool LiveSplitSplitOnCheckpoint = false;
+    string LiveSplitSplitOn = LiveSplitSplitOnSettings[0];
 
     [SettingsTab name="LiveSplit"]
     void RenderLiveSplitSettings()
@@ -67,8 +70,24 @@ namespace PluginSettings
         if (UI::BeginTabItem(Icons::Hourglass + " Splitter Options"))
         {
             LiveSplitStartTimerOnSpawn = UI::Checkbox("Start timer after 3,2,1 countdown", LiveSplitStartTimerOnSpawn);
-            LiveSplitSplitOnFinish = UI::Checkbox("Split on finish", LiveSplitSplitOnFinish);
-            LiveSplitSplitOnCheckpoint = UI::Checkbox("Split after each checkpoint", LiveSplitSplitOnCheckpoint);
+
+            UI::Text("Split at every");
+            UI::SameLine();
+            UI::SetNextItemWidth(120);
+            if (UI::BeginCombo("###SplitOptionCombo", LiveSplitSplitOn)){
+                for (uint i = 0; i < LiveSplitSplitOnSettings.Length; i++) {
+                    string split = LiveSplitSplitOnSettings[i];
+
+                    if (UI::Selectable(split, LiveSplitSplitOn == split)) {
+                        LiveSplitSplitOn = split;
+                    }
+
+                    if (LiveSplitSplitOn == split) {
+                        UI::SetItemDefaultFocus();
+                    }
+                }
+                UI::EndCombo();
+            }
             UI::EndTabItem();
         }
         UI::EndTabBar();

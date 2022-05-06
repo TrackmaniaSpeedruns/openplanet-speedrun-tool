@@ -16,12 +16,14 @@ namespace PlayerStateSR
                     g_LiveSplit.StartTimer();
             }
 
-            // Finish = checkpoint so it splits twice (check that)
+                if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown)
+                    g_LiveSplit.pause();
+            }
 
-            if (TMData.dEventInfo.FinishRun && PluginSettings::LiveSplitSplitOnFinish)
+            if (TMData.dEventInfo.FinishRun && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[0])
                 g_LiveSplit.split();
 
-            if (TMData.dEventInfo.CheckpointChange && PluginSettings::LiveSplitSplitOnCheckpoint)
+            if (TMData.dEventInfo.CheckpointChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[1])
                 g_LiveSplit.split();
 
         }

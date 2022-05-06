@@ -14,7 +14,6 @@ namespace PlayerStateSR
             {
                 if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Driving && PluginSettings::LiveSplitStartTimerOnSpawn)
                     g_LiveSplit.StartTimer();
-            }
 
                 if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown)
                     g_LiveSplit.pause();
@@ -25,6 +24,14 @@ namespace PlayerStateSR
 
             if (TMData.dEventInfo.CheckpointChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[1])
                 g_LiveSplit.split();
+
+            if (TMData.dEventInfo.PauseChange)
+            {
+                if (TMData.IsPaused)
+                    g_LiveSplit.pause();
+                else
+                    g_LiveSplit.resume();
+            }
 
         }
     }

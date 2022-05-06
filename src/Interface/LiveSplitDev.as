@@ -16,15 +16,27 @@ class LiveSplitDevWindow
         {
             if (g_LiveSplit !is null && g_LiveSplit.connected)
             {
-                commandText = UI::InputText("Command", commandText);
-
-                if (UI::GreenButton("Send"))
+                bool pressedEnter = false;
+                commandText = UI::InputText("###Command", commandText, pressedEnter, UI::InputTextFlags::EnterReturnsTrue);
+                UI::SameLine();
+                if (UI::GreenButton("Send") || pressedEnter)
                 {
                     if (commandText.Length > 0)
                     {
                         g_LiveSplit.send(commandText);
                         commandText = "";
                     }
+                }
+
+                UI::Text("Command result: " + g_LiveSplit.lastResult);
+
+                if (PlayerStateSR::TMData !is null)
+                {
+                    UI::Separator();
+                    UI::Text("PlayerState: " + tostring(PlayerStateSR::TMData.PlayerState));
+                    if (PlayerStateSR::TMData.IsPaused) UI::Text("Game Paused");
+                    if (PlayerStateSR::TMData.IsMultiplayer) UI::Text("In Multiplayer");
+                    if (PlayerStateSR::TMData.IsSpectator) UI::Text("In Spectator");
                 }
             }
             else

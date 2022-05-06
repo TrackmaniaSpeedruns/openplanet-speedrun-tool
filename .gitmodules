@@ -1,3 +1,3 @@
-[submodule "LiveSplitComponent/LiveSplit.Server"]
-	path = LiveSplitComponent/LiveSplit.Server
+[submodule "LiveSplit.Server"]
+	path = LiveSplit.Server
 	url = https://github.com/GreepTheSheep/LiveSplit.Server

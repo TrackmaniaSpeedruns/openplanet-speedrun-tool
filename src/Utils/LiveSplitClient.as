@@ -2,11 +2,14 @@ class LiveSplitClient
 {
     Net::Socket@ sock;
     bool connected = false;
+    bool connectTimeout = false;
     string lastResult = "";
+    int connexionAttemptDelay = 0;
+    int connexionAttemptDelayMax = 200;
 
     LiveSplitClient()
     {
-        this.connect();
+        connect();
     }
 
     void connect()
@@ -21,9 +24,15 @@ class LiveSplitClient
 
         while (!sock.CanRead() && !sock.CanWrite()) {
             yield();
+            if (connexionAttemptDelay >= connexionAttemptDelayMax) {
+                error("Failed to connect to LiveSplit server. (Timeout)");
+                connectTimeout = true;
+                return;
+            }
+            connexionAttemptDelay++;
         }
 
-        trace("Connected to LiveSplit server.");
+        trace("Connected to LiveSplit server in "+connexionAttemptDelay+" gameticks.");
         connected = true;
 
     }
@@ -41,6 +50,7 @@ class LiveSplitClient
         if (sock !is null) {
             trace("Disconnecting from LiveSplit server.");
             sock.Close();
+            connected = false;
             @sock = null;
         }
     }

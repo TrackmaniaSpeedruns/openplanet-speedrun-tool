@@ -13,6 +13,22 @@ namespace PluginSettings
     void RenderLiveSplitSettings()
     {
         UI::TextWrapped("This plugin integrates an client that interacts with the LiveSplit application in order to provide a realtime split times, auto splitting, and more.");
+        UI::NewLine();
+
+        UI::Text("Status:");
+        UI::SameLine();
+        if (g_LiveSplit !is null)
+        {
+            if (g_LiveSplit.connected) UI::Text("\\$0f0"+Icons::Check + " \\$zConnected");
+            else {
+                if (g_LiveSplit.connectTimeout) UI::Text("\\$f00"+Icons::Times + " \\$zCannot connect - Timeout");
+                else UI::Text(Icons::Refresh + " Connecting...");
+            }
+        }
+        else
+        {
+            UI::Text("Disconnected or not initialized");
+        }
         UI::Separator();
         if (UI::OrangeButton("Reset to default"))
         {
@@ -22,10 +38,7 @@ namespace PluginSettings
         if (LiveSplitClientEnabled)
         {
             UI::SameLine();
-            if (UI::Button(Icons::Refresh + " Restart client"))
-            {
-                startnew(RestartLiveSplitClient);
-            }
+            if (UI::Button(Icons::Refresh + " Restart client")) startnew(RestartLiveSplitClient);
             UI::SetPreviousTooltip("This will disable the client, then wait 1 second, then enable it again.");
         }
 

@@ -14,8 +14,8 @@ class LiveSplitDevWindow
         UI::SetNextWindowSize(600,120);
         if (UI::Begin("LiveSplit Dev", isOpened))
         {
-            // if (g_LiveSplit.connected)
-            // {
+            if (g_LiveSplit !is null && g_LiveSplit.connected)
+            {
                 commandText = UI::InputText("Command", commandText);
 
                 if (UI::GreenButton("Send"))
@@ -26,11 +26,11 @@ class LiveSplitDevWindow
                         commandText = "";
                     }
                 }
-            // }
-            // else
-            // {
-            //     UI::Text("Not connected to LiveSplit, check logs");
-            // }
+            }
+            else
+            {
+                UI::Text("Not connected to LiveSplit, check logs");
+            }
         }
         UI::End();
         UI::PopStyleVar(4);

@@ -33,6 +33,7 @@ class LiveSplitClient
         }
 
         trace("Connected to LiveSplit server in "+connexionAttemptDelay+" gameticks.");
+        send("initgametime");
         connected = true;
 
     }
@@ -76,17 +77,19 @@ class LiveSplitClient
         }
     }
 
-    void pause()
+    void pause(bool gameTime = true)
     {
         if (connected) {
-            send("pause");
+            if (gameTime) send("pausegametime");
+            else send("pause");
         }
     }
 
-    void resume()
+    void resume(bool gameTime = true)
     {
         if (connected) {
-            send("resume");
+            if (gameTime) send("unpausegametime");
+            else send("resume");
         }
     }
 

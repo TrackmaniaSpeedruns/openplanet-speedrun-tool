@@ -9,11 +9,19 @@ namespace PluginSettings
     [Setting hidden]
     int LiveSplitPort = 16834;
 
+    [Setting hidden]
+    bool LiveSplitStartTimerOnSpawn = true;
+
+    [Setting hidden]
+    bool LiveSplitSplitOnFinish = true;
+
+    [Setting hidden]
+    bool LiveSplitSplitOnCheckpoint = false;
+
     [SettingsTab name="LiveSplit"]
     void RenderLiveSplitSettings()
     {
         UI::TextWrapped("This plugin integrates an client that interacts with the LiveSplit application in order to provide a realtime split times, auto splitting, and more.");
-        UI::NewLine();
 
         UI::Text("Status:");
         UI::SameLine();
@@ -30,25 +38,40 @@ namespace PluginSettings
             UI::Text("Disconnected or not initialized");
         }
         UI::Separator();
-        if (UI::OrangeButton("Reset to default"))
-        {
-            LiveSplitHost = "localhost";
-            LiveSplitPort = 16834;
-        }
-        if (LiveSplitClientEnabled)
-        {
-            UI::SameLine();
-            if (UI::Button(Icons::Refresh + " Restart client")) startnew(RestartLiveSplitClient);
-            UI::SetPreviousTooltip("This will disable the client, then wait 1 second, then enable it again.");
-        }
 
-        LiveSplitClientEnabled = UI::Checkbox("Enable LiveSplit client", LiveSplitClientEnabled);
-
-        if (LiveSplitClientEnabled)
+        // create tabs
+        UI::BeginTabBar("LiveSplitSettingsCategoryTabBar", UI::TabBarFlags::FittingPolicyResizeDown);
+        if (UI::BeginTabItem(Icons::Kenney::Network + " Connexion Settings"))
         {
-            LiveSplitHost = UI::InputText("IP address / hostname", LiveSplitHost);
-            LiveSplitPort = UI::InputInt("Port", LiveSplitPort);
+            if (UI::OrangeButton("Reset to default"))
+            {
+                LiveSplitHost = "localhost";
+                LiveSplitPort = 16834;
+            }
+            if (LiveSplitClientEnabled)
+            {
+                UI::SameLine();
+                if (UI::Button(Icons::Refresh + " Restart client")) startnew(RestartLiveSplitClient);
+                UI::SetPreviousTooltip("This will disable the client, then wait 1 second, then enable it again.");
+            }
+
+            LiveSplitClientEnabled = UI::Checkbox("Enable LiveSplit client", LiveSplitClientEnabled);
+
+            if (LiveSplitClientEnabled)
+            {
+                LiveSplitHost = UI::InputText("IP address / hostname", LiveSplitHost);
+                LiveSplitPort = UI::InputInt("Port", LiveSplitPort);
+            }
+            UI::EndTabItem();
         }
+        if (UI::BeginTabItem(Icons::Hourglass + " Splitter Options"))
+        {
+            LiveSplitStartTimerOnSpawn = UI::Checkbox("Start timer after 3,2,1 countdown", LiveSplitStartTimerOnSpawn);
+            LiveSplitSplitOnFinish = UI::Checkbox("Split on finish", LiveSplitSplitOnFinish);
+            LiveSplitSplitOnCheckpoint = UI::Checkbox("Split after each checkpoint", LiveSplitSplitOnCheckpoint);
+            UI::EndTabItem();
+        }
+        UI::EndTabBar();
     }
 
     void RestartLiveSplitClient()

@@ -62,6 +62,20 @@ class LiveSplitClient
         }
     }
 
+    void split()
+    {
+        if (connected) {
+            send("split");
+        }
+    }
+
+    void StartTimer()
+    {
+        if (connected) {
+            send("starttimer");
+        }
+    }
+
     void pause()
     {
         if (connected) {
@@ -73,6 +87,13 @@ class LiveSplitClient
     {
         if (connected) {
             send("resume");
+        }
+    }
+
+    void reset()
+    {
+        if (connected) {
+            send("reset");
         }
     }
 }

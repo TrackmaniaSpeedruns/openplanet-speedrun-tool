@@ -3,24 +3,26 @@ LiveSplitDevWindow@ g_LiveSplitDevWindow;
 
 void Main()
 {
+    @g_LiveSplitDevWindow = LiveSplitDevWindow();
     if (PluginSettings::LiveSplitClientEnabled)
     {
-        @g_LiveSplitDevWindow = LiveSplitDevWindow();
         @g_LiveSplit = LiveSplitClient();
         startnew(waitForLiveSplitData);
     }
-    else
-    {
-        startnew(waitForEnableLiveSplit);
-    }
+    else startnew(waitForEnableLiveSplit);
+}
+
+void Update(float dt)
+{
+    PlayerStateSR::UpdateLoop(dt);
 }
 
 void RenderMenu()
 {
     if (g_LiveSplitDevWindow !is null && IS_DEV_MODE && UI::MenuItem("LiveSplit Dev window", "", g_LiveSplitDevWindow.isOpened))
-    {
         g_LiveSplitDevWindow.isOpened = !g_LiveSplitDevWindow.isOpened;
-    }
+
+
 }
 
 void RenderInterface()

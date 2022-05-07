@@ -6,6 +6,7 @@ category = "Speedrunning"
 version = "1.0"
 
 [script]
+imports = [ "Permissions.as", "Formatting.as" ]
 dependencies = [ "PlayerState" ]
 
 timeout = 0

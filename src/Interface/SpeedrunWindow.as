@@ -4,10 +4,16 @@ class SpeedrunWindow
     array<SWTab@> tabs;
     SWTab@ activeTab;
     SWTab@ c_lastActiveTab;
+    array<Campaign@> selected_campaigns;
 
     SpeedrunWindow()
     {
         AddTab(HomeSWTab());
+        AddTab(TrainingSelectSWTab());
+        AddTab(OfficialCampaignsSelectSWTab());
+        AddTab(ClubCampaignsSelectSWTab());
+        AddTab(TOTDSelectSWTab());
+        AddTab(SpeedrunBeforeStart());
     }
 
     void AddTab(SWTab@ tab, bool select = false){

@@ -7,9 +7,9 @@ class HomeSWTab : SWTab
         @t_header = Resources::GetFont("DroidSans.ttf", 20, -1, -1, true, true, true);
     }
 
-    string GetLabel() { return Icons::Home; }
+    string GetLabel() override { return Icons::Home; }
 
-    vec4 GetColor() { return vec4(0, 0.645, 0.144, 1); }
+    vec4 GetColor() override { return vec4(0, 0.645, 0.144, 1); }
 
     void Render() override
     {

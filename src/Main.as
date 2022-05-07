@@ -21,7 +21,7 @@ void Update(float dt)
 
 void RenderMenu()
 {
-    if (g_LiveSplitDevWindow !is null && IS_DEV_MODE && UI::MenuItem("LiveSplit Dev window", "", g_LiveSplitDevWindow.isOpened))
+    if (g_LiveSplitDevWindow !is null && IS_DEV_MODE && UI::MenuItem("LiveSplit Dev", "", g_LiveSplitDevWindow.isOpened))
         g_LiveSplitDevWindow.isOpened = !g_LiveSplitDevWindow.isOpened;
 
     if (g_SpeedrunWindow !is null && UI::MenuItem(PLUGIN_ICON+ "Speedrun", "", g_SpeedrunWindow.isOpened))
@@ -32,6 +32,11 @@ void RenderInterface()
 {
     if (g_LiveSplitDevWindow !is null) g_LiveSplitDevWindow.Render();
     if (g_SpeedrunWindow !is null) g_SpeedrunWindow.Render();
+}
+
+void Render()
+{
+    Renderables::Render();
 }
 
 void waitForLiveSplitData()

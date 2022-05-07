@@ -5,6 +5,7 @@ namespace API
         auto ret = Net::HttpRequest();
         ret.Method = Net::HttpMethod::Get;
         ret.Url = url;
+        trace("Get: " + url);
         ret.Start();
         return ret;
     }

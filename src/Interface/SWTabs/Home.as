@@ -1,6 +1,11 @@
 class HomeSWTab : SWTab
 {
-    Resources::Font@ t_header = Resources::GetFont("DroidSans.ttf", 20, -1, -1, true, true, true);
+    Resources::Font@ t_header;
+
+    HomeSWTab()
+    {
+        @t_header = Resources::GetFont("DroidSans.ttf", 20, -1, -1, true, true, true);
+    }
 
     string GetLabel() { return Icons::Home; }
 

@@ -1,5 +1,12 @@
 namespace PluginSettings
 {
+
+    [Setting hidden]
+    bool LiveSplitFirstSetupDone = false;
+
+    [Setting hidden]
+    string LiveSplitAppPath = "";
+
     [Setting hidden]
     bool LiveSplitClientEnabled = true;
 
@@ -88,6 +95,12 @@ namespace PluginSettings
                 }
                 UI::EndCombo();
             }
+            UI::EndTabItem();
+        }
+        if (UI::BeginTabItem(Icons::Check + " Misc"))
+        {
+            LiveSplitFirstSetupDone = UI::Checkbox("Wizard done", LiveSplitFirstSetupDone);
+            LiveSplitAppPath = UI::InputText("LiveSplit path", LiveSplitAppPath);
             UI::EndTabItem();
         }
         UI::EndTabBar();

@@ -4,6 +4,8 @@ SpeedrunWindow@ g_SpeedrunWindow;
 
 void Main()
 {
+    if (!PluginSettings::LiveSplitFirstSetupDone) Renderables::Add(LiveSplitWizard());
+
     @g_SpeedrunWindow = SpeedrunWindow();
     @g_LiveSplitDevWindow = LiveSplitDevWindow();
     if (PluginSettings::LiveSplitClientEnabled)

@@ -11,7 +11,7 @@ class LiveSplitDevWindow
         UI::PushStyleVar(UI::StyleVar::WindowRounding, 10.0);
         UI::PushStyleVar(UI::StyleVar::FramePadding, vec2(10, 6));
         UI::PushStyleVar(UI::StyleVar::WindowTitleAlign, vec2(.5, .5));
-        UI::SetNextWindowSize(600,120);
+        UI::SetNextWindowSize(600,150);
         if (UI::Begin("LiveSplit Dev", isOpened))
         {
             if (g_LiveSplit !is null && g_LiveSplit.connected)
@@ -29,19 +29,19 @@ class LiveSplitDevWindow
                 }
 
                 UI::Text("Command result: " + g_LiveSplit.lastResult);
-
-                if (PlayerStateSR::TMData !is null)
-                {
-                    UI::Separator();
-                    UI::Text("PlayerState: " + tostring(PlayerStateSR::TMData.PlayerState));
-                    if (PlayerStateSR::TMData.IsPaused) UI::Text("Game Paused");
-                    if (PlayerStateSR::TMData.IsMultiplayer) UI::Text("In Multiplayer");
-                    if (PlayerStateSR::TMData.IsSpectator) UI::Text("In Spectator");
-                }
             }
             else
             {
                 UI::Text("Not connected to LiveSplit, check logs");
+            }
+
+            if (PlayerStateSR::TMData !is null)
+            {
+                UI::Separator();
+                UI::Text("PlayerState: " + tostring(PlayerStateSR::TMData.PlayerState));
+                if (PlayerStateSR::TMData.IsPaused) UI::Text("Game Paused");
+                if (PlayerStateSR::TMData.IsMultiplayer) UI::Text("In Multiplayer");
+                if (PlayerStateSR::TMData.IsSpectator) UI::Text("In Spectator");
             }
         }
         UI::End();

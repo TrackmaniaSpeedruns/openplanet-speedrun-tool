@@ -1,8 +1,10 @@
 LiveSplitClient@ g_LiveSplit;
 LiveSplitDevWindow@ g_LiveSplitDevWindow;
+SpeedrunWindow@ g_SpeedrunWindow;
 
 void Main()
 {
+    @g_SpeedrunWindow = SpeedrunWindow();
     @g_LiveSplitDevWindow = LiveSplitDevWindow();
     if (PluginSettings::LiveSplitClientEnabled)
     {
@@ -22,12 +24,14 @@ void RenderMenu()
     if (g_LiveSplitDevWindow !is null && IS_DEV_MODE && UI::MenuItem("LiveSplit Dev window", "", g_LiveSplitDevWindow.isOpened))
         g_LiveSplitDevWindow.isOpened = !g_LiveSplitDevWindow.isOpened;
 
-
+    if (g_SpeedrunWindow !is null && UI::MenuItem(PLUGIN_ICON+ "Speedrun", "", g_SpeedrunWindow.isOpened))
+        PluginSettings::SpeedrunWindowOpened = !PluginSettings::SpeedrunWindowOpened;
 }
 
 void RenderInterface()
 {
     if (g_LiveSplitDevWindow !is null) g_LiveSplitDevWindow.Render();
+    if (g_SpeedrunWindow !is null) g_SpeedrunWindow.Render();
 }
 
 void waitForLiveSplitData()

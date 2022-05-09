@@ -78,18 +78,21 @@ class SpeedrunBeforeStart : SWTab
         {
 			CampaignSummary@ campaign = g_SpeedrunWindow.selectedCampaigns[i];
             UI::PushID("CampaignOrderLine"+i);
-			if (UI::Button(Icons::AngleUp))
+            if (g_SpeedrunWindow.selectedCampaigns.Length > 1)
             {
-                g_SpeedrunWindow.selectedCampaigns.RemoveAt(i);
-                g_SpeedrunWindow.selectedCampaigns.InsertAt(Math::Max(0, i-1), campaign);
+                if (UI::Button(Icons::AngleUp))
+                {
+                    g_SpeedrunWindow.selectedCampaigns.RemoveAt(i);
+                    g_SpeedrunWindow.selectedCampaigns.InsertAt(Math::Max(0, i-1), campaign);
+                }
+                UI::SameLine();
+                if (UI::Button(Icons::AngleDown))
+                {
+                    g_SpeedrunWindow.selectedCampaigns.RemoveAt(i);
+                    g_SpeedrunWindow.selectedCampaigns.InsertAt(Math::Min(g_SpeedrunWindow.selectedCampaigns.Length, i+1), campaign);
+                }
+                UI::SameLine();
             }
-			UI::SameLine();
-			if (UI::Button(Icons::AngleDown))
-            {
-                g_SpeedrunWindow.selectedCampaigns.RemoveAt(i);
-                g_SpeedrunWindow.selectedCampaigns.InsertAt(Math::Min(g_SpeedrunWindow.selectedCampaigns.Length, i+1), campaign);
-            }
-            UI::SameLine();
 			if (UI::RedButton(Icons::Times))
             {
                 g_SpeedrunWindow.selectedCampaigns.RemoveAt(i);

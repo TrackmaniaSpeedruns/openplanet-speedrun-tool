@@ -1,4 +1,4 @@
-class TOTDSelectSWTab : CampaignListSWTab
+class TOTDSelectSWTab : SWTab
 {
     string GetLabel() override { return Icons::Calendar + " Track of The Day"; }
 
@@ -6,8 +6,4 @@ class TOTDSelectSWTab : CampaignListSWTab
 
     bool IsVisible() override { return Permissions::PlayCurrentOfficialMonthlyCampaign(); }
 
-    void Render() override
-    {
-
-    }
 }

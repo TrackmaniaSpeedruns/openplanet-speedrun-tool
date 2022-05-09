@@ -4,7 +4,7 @@ class SpeedrunWindow
     array<SWTab@> tabs;
     SWTab@ activeTab;
     SWTab@ c_lastActiveTab;
-    array<Campaign@> selected_campaigns;
+    array<CampaignSummary@> selectedCampaigns;
 
     SpeedrunWindow()
     {

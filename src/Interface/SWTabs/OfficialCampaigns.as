@@ -13,7 +13,7 @@ class OfficialCampaignsSelectSWTab : CampaignListSWTab
         auto items = json["campaigns"];
         for (uint i = 0; i < items.Length; i++) {
             CampaignSummary@ campaign = CampaignSummary(items[i]);
-            if (campaign.clubid == 0) campaigns.InsertLast(campaign);
+            if (campaign.type == Campaigns::campaignType::Season) campaigns.InsertLast(campaign);
         }
     }
 }

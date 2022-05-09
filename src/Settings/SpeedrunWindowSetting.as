@@ -6,6 +6,6 @@ namespace PluginSettings
     [SettingsTab name="Window"]
     void RenderSpeedrunWindowSettings()
     {
-        SpeedrunWindowOpened = UI::Checkbox("Speedrun Window", SpeedrunWindowOpened);
+        SpeedrunWindowOpened = UI::WhiteCheckbox("Speedrun Window", SpeedrunWindowOpened);
     }
 }

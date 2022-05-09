@@ -65,7 +65,7 @@ namespace PluginSettings
                 UI::SetPreviousTooltip("This will disable the client, then wait 1 second, then enable it again.");
             }
 
-            LiveSplitClientEnabled = UI::Checkbox("Enable LiveSplit client", LiveSplitClientEnabled);
+            LiveSplitClientEnabled = UI::WhiteCheckbox("Enable LiveSplit client", LiveSplitClientEnabled);
 
             if (LiveSplitClientEnabled)
             {
@@ -76,7 +76,7 @@ namespace PluginSettings
         }
         if (UI::BeginTabItem(Icons::Hourglass + " Splitter Options"))
         {
-            LiveSplitStartTimerOnSpawn = UI::Checkbox("Start timer after 3,2,1 countdown", LiveSplitStartTimerOnSpawn);
+            LiveSplitStartTimerOnSpawn = UI::WhiteCheckbox("Start timer after 3,2,1 countdown", LiveSplitStartTimerOnSpawn);
 
             UI::Text("Split at every");
             UI::SameLine();
@@ -99,7 +99,7 @@ namespace PluginSettings
         }
         if (UI::BeginTabItem(Icons::Check + " Misc"))
         {
-            LiveSplitFirstSetupDone = UI::Checkbox("Wizard done", LiveSplitFirstSetupDone);
+            LiveSplitFirstSetupDone = UI::WhiteCheckbox("Wizard done", LiveSplitFirstSetupDone);
             LiveSplitAppPath = UI::InputText("LiveSplit path", LiveSplitAppPath);
             UI::EndTabItem();
         }

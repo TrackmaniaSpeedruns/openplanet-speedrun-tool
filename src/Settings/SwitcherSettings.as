@@ -9,7 +9,7 @@ namespace PluginSettings
     [SettingsTab name="Map Switcher"]
     void RenderSwitcherSettings()
     {
-        SwitcherPreloadCache = UI::Checkbox("Preload Cache", SwitcherPreloadCache);
-        SwitcherAutoloadNextMap = UI::Checkbox("Auto load Next Map", SwitcherAutoloadNextMap);
+        SwitcherPreloadCache = UI::WhiteCheckbox("Preload Cache", SwitcherPreloadCache);
+        SwitcherAutoloadNextMap = UI::WhiteCheckbox("Auto load Next Map", SwitcherAutoloadNextMap);
     }
 }

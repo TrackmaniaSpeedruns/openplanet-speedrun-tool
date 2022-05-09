@@ -1,15 +1,16 @@
 LiveSplitClient@ g_LiveSplit;
 LiveSplitDevWindow@ g_LiveSplitDevWindow;
 SpeedrunWindow@ g_SpeedrunWindow;
+Speedrun@ g_speedrun;
 
 void Main()
 {
-    if (!PluginSettings::LiveSplitFirstSetupDone) Renderables::Add(LiveSplitWizard());
-
+    @g_speedrun = Speedrun();
     @g_SpeedrunWindow = SpeedrunWindow();
     @g_LiveSplitDevWindow = LiveSplitDevWindow();
     if (PluginSettings::LiveSplitClientEnabled)
     {
+        if (!PluginSettings::LiveSplitFirstSetupDone) Renderables::Add(LiveSplitWizard());
         @g_LiveSplit = LiveSplitClient();
         startnew(waitForLiveSplitData);
     }
@@ -18,7 +19,7 @@ void Main()
 
 void Update(float dt)
 {
-    PlayerStateSR::UpdateLoop(dt);
+    if (g_speedrun.IsRunning) g_speedrun.Update(dt);
 }
 
 void RenderMenu()

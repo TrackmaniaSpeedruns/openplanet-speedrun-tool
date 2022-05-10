@@ -35,13 +35,13 @@ class LiveSplitDevWindow
                 UI::Text("Not connected to LiveSplit, check logs");
             }
 
-            if (PlayerStateSR::TMData !is null)
+            if (g_speedrun.TMData !is null)
             {
                 UI::Separator();
-                UI::Text("PlayerState: " + tostring(PlayerStateSR::TMData.PlayerState));
-                if (PlayerStateSR::TMData.IsPaused) UI::Text("Game Paused");
-                if (PlayerStateSR::TMData.IsMultiplayer) UI::Text("In Multiplayer");
-                if (PlayerStateSR::TMData.IsSpectator) UI::Text("In Spectator");
+                UI::Text("PlayerState: " + tostring(g_speedrun.TMData.PlayerState));
+                if (g_speedrun.TMData.IsPaused) UI::Text("Game Paused");
+                if (g_speedrun.TMData.IsMultiplayer) UI::Text("In Multiplayer");
+                if (g_speedrun.TMData.IsSpectator) UI::Text("In Spectator");
             }
         }
         UI::End();

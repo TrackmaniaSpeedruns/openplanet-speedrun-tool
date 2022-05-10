@@ -1,6 +1,7 @@
 class Speedrun
 {
     bool IsRunning = false;
+    bool firstMap = false;
 
     Campaigns::campaignType currentCampaignType = Campaigns::campaignType::Unknown;
 
@@ -15,11 +16,58 @@ class Speedrun
             @TMData = PlayerState::GetRaceData();
             if (TMData.dEventInfo.FinishRun && PluginSettings::SwitcherAutoloadNextMap)
                 startnew(Speedrun::NextMap);
-            // PlayerStateSR::UpdateLoop(dt);
+
+            if (g_LiveSplit !is null)
+                LiveSplitUpdateLoop();
         }
         else
         {
             currentCampaignType = Campaigns::campaignType::Unknown;
+        }
+    }
+
+    void LiveSplitUpdateLoop()
+    {
+        if (TMData.dEventInfo.PlayerStateChange)
+        {
+            if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Driving)
+            {
+                if (g_speedrun.firstMap)
+                {
+                    if (PluginSettings::LiveSplitStartTimerOnSpawn)
+                    {
+                        g_LiveSplit.StartTimer();
+                        g_LiveSplit.resume();
+                    }
+                }
+                else
+                    g_LiveSplit.resume();
+            }
+
+            if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Menus || TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Finished)
+                g_LiveSplit.pause();
+
+            if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown)
+            {
+                if (g_speedrun.firstMap)
+                    g_LiveSplit.reset();
+                else
+                    g_LiveSplit.pause();
+            }
+        }
+
+        if (TMData.dEventInfo.FinishRun && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[0])
+            g_LiveSplit.split();
+
+        if (TMData.dEventInfo.CheckpointChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[1])
+            g_LiveSplit.split();
+
+        if (TMData.dEventInfo.PauseChange)
+        {
+            if (TMData.IsPaused)
+                g_LiveSplit.pause();
+            else
+                g_LiveSplit.resume();
         }
     }
 }
@@ -29,11 +77,28 @@ namespace Speedrun
     void StartSpeedrun()
     {
         g_speedrun.IsRunning = true;
-        NextMap();
+        g_speedrun.firstMap = true;
+
+
+        CampaignSummary@ campaign = g_SpeedrunWindow.selectedCampaigns[0];
+        g_speedrun.currentCampaignType = campaign.type;
+        FetchCampaign(campaign.id, campaign.clubid);
+        g_SpeedrunWindow.selectedCampaigns.RemoveAt(0);
+        UI::HideOverlay();
+        ClosePauseMenu();
+        CTrackMania@ app = cast<CTrackMania>(GetApp());
+        app.BackToMainMenu();
+        while(!app.ManiaTitleControlScriptAPI.IsReady) {
+            yield();
+        }
+        UI::ShowNotification("Loading map...", ColoredString(g_speedrun.mapPlaylist[0].name));
+        app.ManiaTitleControlScriptAPI.PlayMap(g_speedrun.mapPlaylist[0].file_url, "", "");
+        g_speedrun.mapPlaylist.RemoveAt(0);
     }
 
     void NextMap()
     {
+        g_speedrun.firstMap = false;
         if (g_speedrun.mapPlaylist.Length > 0)
         {
             ClosePauseMenu();

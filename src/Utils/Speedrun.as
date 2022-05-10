@@ -2,8 +2,14 @@ class Speedrun
 {
     bool IsRunning = false;
     bool firstMap = false;
+    bool logInitialized = false;
+    string logFileName = "";
+    int MapCompleteTime = 0;
+    int SumCompleteTime = 0;
 
     Campaigns::campaignType currentCampaignType = Campaigns::campaignType::Unknown;
+
+    CampaignSummary@ currentCampaign;
 
     array<MapInfo@> mapPlaylist;
 
@@ -14,8 +20,34 @@ class Speedrun
         if (IsRunning)
         {
             @TMData = PlayerState::GetRaceData();
-            if (TMData.dEventInfo.FinishRun && PluginSettings::SwitcherAutoloadNextMap)
-                startnew(Speedrun::NextMap);
+            if (TMData.dEventInfo.FinishRun)
+            {
+                MapCompleteTime = TMData.dPlayerInfo.EndTime;
+                SumCompleteTime += MapCompleteTime;
+
+                if (logInitialized)
+                    WriteSpeedrunLog();
+
+                if (PluginSettings::SwitcherAutoloadNextMap)
+                {
+                    if (PluginSettings::SwitcherNextMapOnMedal != Speedrun::Medals[0])
+                    {
+                        int author = TMData.dMapInfo.TMObjective_AuthorTime;
+                        int gold = TMData.dMapInfo.TMObjective_GoldTime;
+                        int silver = TMData.dMapInfo.TMObjective_SilverTime;
+                        int bronze = TMData.dMapInfo.TMObjective_BronzeTime;
+                        if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[4] && MapCompleteTime <= author)
+                            startnew(Speedrun::NextMap);
+                        else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[3] && MapCompleteTime <= gold)
+                            startnew(Speedrun::NextMap);
+                        else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[2] && MapCompleteTime <= silver)
+                            startnew(Speedrun::NextMap);
+                        else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[1] && MapCompleteTime <= bronze)
+                            startnew(Speedrun::NextMap);
+                    }
+                    else startnew(Speedrun::NextMap);
+                }
+            }
 
             if (g_LiveSplit !is null)
                 LiveSplitUpdateLoop();
@@ -23,6 +55,10 @@ class Speedrun
         else
         {
             currentCampaignType = Campaigns::campaignType::Unknown;
+            MapCompleteTime = 0;
+            SumCompleteTime = 0;
+            logInitialized = false;
+            if (mapPlaylist.Length > 0) mapPlaylist.RemoveRange(0, mapPlaylist.Length);
         }
     }
 
@@ -57,7 +93,24 @@ class Speedrun
         }
 
         if (TMData.dEventInfo.FinishRun && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[0])
-            g_LiveSplit.split();
+        {
+            if (PluginSettings::SwitcherNextMapOnMedal != Speedrun::Medals[0])
+            {
+                int author = TMData.dMapInfo.TMObjective_AuthorTime;
+                int gold = TMData.dMapInfo.TMObjective_GoldTime;
+                int silver = TMData.dMapInfo.TMObjective_SilverTime;
+                int bronze = TMData.dMapInfo.TMObjective_BronzeTime;
+                if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[4] && MapCompleteTime <= author)
+                    g_LiveSplit.split();
+                else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[3] && MapCompleteTime <= gold)
+                    g_LiveSplit.split();
+                else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[2] && MapCompleteTime <= silver)
+                    g_LiveSplit.split();
+                else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[1] && MapCompleteTime <= bronze)
+                    g_LiveSplit.split();
+            }
+            else g_LiveSplit.split();
+        }
 
         if (TMData.dEventInfo.CheckpointChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[1])
             g_LiveSplit.split();
@@ -70,10 +123,55 @@ class Speedrun
                 g_LiveSplit.resume();
         }
     }
+
+    void InitSpeedrunLog(bool newFile = true)
+    {
+        string speedrunPath = IO::FromUserGameFolder("Speedruns");
+        if (!IO::FolderExists(speedrunPath)) IO::CreateFolder(speedrunPath);
+
+        if (newFile)
+            logFileName = speedrunPath + "/" + Time::FormatString("%F_%H-%M-%S") + ".txt";
+
+        IO::File file(logFileName);
+        file.Open(IO::FileMode::Append);
+        if (!newFile) file.WriteLine();
+        file.WriteLine("Trackmania - " + StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T"));
+        file.WriteLine("(times without respawns)");
+        file.WriteLine();
+        file.WriteLine("Sum | Segment | Track");
+	    file.Close();
+        logInitialized = true;
+    }
+
+    void WriteSpeedrunLog()
+    {
+        IO::File file(logFileName);
+        file.Open(IO::FileMode::Append);
+        file.WriteLine(Speedrun::FormatTimer(SumCompleteTime) + " | " + Speedrun::FormatTimer(MapCompleteTime) + " | " + StripFormatCodes(TMData.dMapInfo.MapName));
+	    file.Close();
+    }
+
+    void EndOfFileLog()
+    {
+        IO::File file(logFileName);
+        file.Open(IO::FileMode::Append);
+        file.WriteLine();
+        file.WriteLine("End of speedrun at " + Time::FormatString("%F %T"));
+	    file.Close();
+    }
 }
 
 namespace Speedrun
 {
+
+    array<string> Medals = {
+        "No medal",
+        "Bronze",
+        "Silver",
+        "Gold",
+        "Author"
+    };
+
     void StartSpeedrun()
     {
         g_speedrun.IsRunning = true;
@@ -82,6 +180,7 @@ namespace Speedrun
 
         CampaignSummary@ campaign = g_SpeedrunWindow.selectedCampaigns[0];
         g_speedrun.currentCampaignType = campaign.type;
+        @g_speedrun.currentCampaign = campaign;
         FetchCampaign(campaign.id, campaign.clubid);
         g_SpeedrunWindow.selectedCampaigns.RemoveAt(0);
         UI::HideOverlay();
@@ -94,6 +193,9 @@ namespace Speedrun
         UI::ShowNotification("Loading map...", ColoredString(g_speedrun.mapPlaylist[0].name));
         app.ManiaTitleControlScriptAPI.PlayMap(g_speedrun.mapPlaylist[0].file_url, "", "");
         g_speedrun.mapPlaylist.RemoveAt(0);
+
+        if (PluginSettings::WriteSpeedrunLog)
+            g_speedrun.InitSpeedrunLog(true);
     }
 
     void NextMap()
@@ -119,15 +221,20 @@ namespace Speedrun
             {
                 CampaignSummary@ campaign = g_SpeedrunWindow.selectedCampaigns[0];
                 g_speedrun.currentCampaignType = campaign.type;
+                @g_speedrun.currentCampaign = campaign;
                 UI::ShowNotification("Switching to campaign: " + ColoredString(campaign.name));
                 FetchCampaign(campaign.id, campaign.clubid);
                 g_SpeedrunWindow.selectedCampaigns.RemoveAt(0);
+                if (PluginSettings::WriteSpeedrunLog)
+                    g_speedrun.InitSpeedrunLog(false);
                 NextMap();
             }
             else
             {
                 // The end of the speedrun
                 UI::ShowNotification("Speedrun finished!");
+                if (PluginSettings::WriteSpeedrunLog)
+                    g_speedrun.EndOfFileLog();
                 g_speedrun.IsRunning = false;
             }
         }
@@ -206,5 +313,25 @@ namespace Speedrun
 			default:
 				warn("Unknown campaign type for campaign " + campaignId);
         }
+    }
+
+    string FormatTimer(int time) {
+        int hundreths = time % 1000 / 10;
+        time /= 1000;
+        int hours = time / 60 / 60;
+        int minutes = (time / 60) % 60;
+        int seconds = time % 60;
+
+        string result = "";
+
+        if (hours > 0) {
+            result += Text::Format("%02d", hours) + ":";
+        }
+        if (minutes > 0 || (hours > 0 && minutes < 10)) {
+            result += Text::Format("%02d", minutes) + ":";
+        }
+        result += Text::Format("%02d", seconds) + "." + Text::Format("%02d", hundreths);
+
+        return result;
     }
 }

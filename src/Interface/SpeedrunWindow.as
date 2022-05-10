@@ -9,11 +9,11 @@ class SpeedrunWindow
     SpeedrunWindow()
     {
         AddTab(HomeSWTab());
+        AddTab(SpeedrunBeforeStart());
         AddTab(TrainingSelectSWTab());
         AddTab(OfficialCampaignsSelectSWTab());
-        AddTab(ClubCampaignsSelectSWTab());
         AddTab(TOTDSelectSWTab());
-        AddTab(SpeedrunBeforeStart());
+        AddTab(ClubCampaignsSelectSWTab());
     }
 
     void AddTab(SWTab@ tab, bool select = false){

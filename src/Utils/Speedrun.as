@@ -316,7 +316,7 @@ namespace Speedrun
     }
 
     string FormatTimer(int time) {
-        int hundreths = time % 1000 / 10;
+        int hundreths = time % 1000;
         time /= 1000;
         int hours = time / 60 / 60;
         int minutes = (time / 60) % 60;

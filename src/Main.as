@@ -19,7 +19,7 @@ void Main()
 
 void Update(float dt)
 {
-    if (g_speedrun.IsRunning) g_speedrun.Update(dt);
+    g_speedrun.Update(dt);
 }
 
 void RenderMenu()

@@ -1,7 +1,7 @@
 class SpeedrunBeforeStart : SWTab
 {
 
-    string GetLabel() { return Icons::Play + " Start"; }
+    string GetLabel() { return PLUGIN_ICON + " Status"; }
 
     vec4 GetColor() { return vec4(0.6, 0.6, 0.6, 1); }
 
@@ -28,52 +28,67 @@ class SpeedrunBeforeStart : SWTab
 
     void Render() override
     {
-        if (g_SpeedrunWindow.selectedCampaigns.Length == 0)
+        if (g_speedrun.IsRunning)
         {
-            UI::Text("No campaigns selected, please select campaigns in the tabs above");
+            if (UI::CyanButton(Icons::AngleDoubleRight + " Next map"))
+            {
+                startnew(Speedrun::NextMap);
+            }
+            UI::SameLine();
+            if (UI::RedButton(Icons::Times + " Stop speedrun"))
+            {
+                g_speedrun.IsRunning = false;
+            }
         }
         else
         {
-            if (PluginSettings::SwitcherPreloadCache)
+            if (g_SpeedrunWindow.selectedCampaigns.Length == 0)
             {
-                if (UI::GreenButton(Icons::Play + " Start preloading cache"))
-                {
-                    if (!CheckLiveSplit()) return;
-                    print("Starting preload cache");
-                }
+                UI::Text("No campaigns selected, please select campaigns in the tabs above");
             }
             else
             {
-                if (UI::GreenButton(Icons::Play + " Start speedrun"))
+                if (PluginSettings::SwitcherPreloadCache)
                 {
-                    if (!CheckLiveSplit()) return;
-                    print("Starting speedrun");
+                    if (UI::GreenButton(Icons::Play + " Start preloading cache"))
+                    {
+                        if (!CheckLiveSplit()) return;
+                        print("Starting preload cache");
+                    }
                 }
-            }
-
-            if (g_LiveSplit is null)
-            {
-                UI::SameLine();
-                if (PluginSettings::LiveSplitClientEnabled)
-                    UI::Text("\\$f00"+Icons::Times+" \\$zLiveSplit client is not loaded, please wait...");
                 else
                 {
-                    UI::Text("\\$ff0" + Icons::InfoCircle + " \\$zLiveSplit client is disabled");
-                    UI::SameLine();
-                    if (UI::CyanButton("Enable LiveSplit"))
-                        PluginSettings::LiveSplitClientEnabled = true;
+                    if (UI::GreenButton(Icons::Play + " Start speedrun"))
+                    {
+                        if (!CheckLiveSplit()) return;
+                        print("Starting speedrun");
+                        startnew(Speedrun::StartSpeedrun);
+                    }
                 }
-            }
-            if (g_LiveSplit !is null && !g_LiveSplit.connected)
-            {
-                UI::SameLine();
-                UI::Text("\\$f90" + Icons::ExclamationTriangle + " \\$zLiveSplit client is not connected to the app");
-                UI::SameLine();
-                if (UI::CyanButton(Icons::Refresh + " Retry"))
-                    startnew(PluginSettings::RestartLiveSplitClient);
-                UI::SameLine();
-                if (UI::OrangeButton("Disable LiveSplit"))
-                    PluginSettings::LiveSplitClientEnabled = false;
+                if (g_LiveSplit is null)
+                {
+                    UI::SameLine();
+                    if (PluginSettings::LiveSplitClientEnabled)
+                        UI::Text("\\$f00"+Icons::Times+" \\$zLiveSplit client is not loaded, please wait...");
+                    else
+                    {
+                        UI::Text("\\$ff0" + Icons::InfoCircle + " \\$zLiveSplit client is disabled");
+                        UI::SameLine();
+                        if (UI::CyanButton("Enable LiveSplit"))
+                            PluginSettings::LiveSplitClientEnabled = true;
+                    }
+                }
+                if (g_LiveSplit !is null && !g_LiveSplit.connected)
+                {
+                    UI::SameLine();
+                    UI::Text("\\$f90" + Icons::ExclamationTriangle + " \\$zLiveSplit client is not connected to the app");
+                    UI::SameLine();
+                    if (UI::CyanButton(Icons::Refresh + " Retry"))
+                        startnew(PluginSettings::RestartLiveSplitClient);
+                    UI::SameLine();
+                    if (UI::OrangeButton("Disable LiveSplit"))
+                        PluginSettings::LiveSplitClientEnabled = false;
+                }
             }
         }
 

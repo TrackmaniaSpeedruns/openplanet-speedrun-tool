@@ -20,6 +20,7 @@ class LiveSplitDisconnectWarnModalDialog : ModalDialog
         UI::SetCursorPos(vec2(UI::GetWindowSize().x - 75, UI::GetCursorPos().y));
         if (UI::OrangeButton(Icons::PlayCircleO + " Yes")) {
             Close();
+            startnew(Speedrun::StartSpeedrun);
         }
     }
 }

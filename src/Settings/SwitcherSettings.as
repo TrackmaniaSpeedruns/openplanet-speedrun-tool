@@ -16,7 +16,7 @@ namespace PluginSettings
     void RenderSwitcherSettings()
     {
         // SwitcherPreloadCache = UI::WhiteCheckbox("Preload Cache", SwitcherPreloadCache);
-        SwitcherAutoloadNextMap = UI::WhiteCheckbox("Auto load Next Map", SwitcherAutoloadNextMap);
+        SwitcherAutoloadNextMap = UI::WhiteCheckbox("Auto skip to Next Map (recommended)", SwitcherAutoloadNextMap);
         UI::Text("Split on medal:");
         UI::SameLine();
         if (UI::BeginCombo("###MedalSkipOptionCombo", SwitcherNextMapOnMedal)){
@@ -33,7 +33,7 @@ namespace PluginSettings
             }
             UI::EndCombo();
         }
-        WriteSpeedrunLog = UI::WhiteCheckbox("Output speedruns logfiles", WriteSpeedrunLog);
+        WriteSpeedrunLog = UI::WhiteCheckbox("Output speedruns log files", WriteSpeedrunLog);
         UI::SetPreviousTooltip("You can find your log files in " + IO::FromUserGameFolder("Speedruns"));
     }
 }

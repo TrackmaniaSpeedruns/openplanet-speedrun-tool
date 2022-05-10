@@ -40,7 +40,6 @@ class HomeSWTab : SWTab
             else UI::Text("\\$f00" + Icons::Times + " \\$zDisconnected");
 
             if (UI::Button(Icons::Refresh + " Restart client")) startnew(PluginSettings::RestartLiveSplitClient);
-            UI::SetPreviousTooltip("This will disable the client, then wait 1 second, then enable it again.");
 
             UI::Separator();
         }

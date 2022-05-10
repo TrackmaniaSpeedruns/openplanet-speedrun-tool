@@ -54,12 +54,26 @@ class SpeedrunBeforeStart : SWTab
             if (g_LiveSplit is null)
             {
                 UI::SameLine();
-                UI::Text("\\$f00"+Icons::Times+" \\$zLiveSplit is not loaded, please wait...");
+                if (PluginSettings::LiveSplitClientEnabled)
+                    UI::Text("\\$f00"+Icons::Times+" \\$zLiveSplit client is not loaded, please wait...");
+                else
+                {
+                    UI::Text("\\$ff0" + Icons::InfoCircle + " \\$zLiveSplit client is disabled");
+                    UI::SameLine();
+                    if (UI::CyanButton("Enable LiveSplit"))
+                        PluginSettings::LiveSplitClientEnabled = true;
+                }
             }
             if (g_LiveSplit !is null && !g_LiveSplit.connected)
             {
                 UI::SameLine();
-                UI::Text("\\$f90" + Icons::ExclamationTriangle + " \\$zLiveSplit disconnected");
+                UI::Text("\\$f90" + Icons::ExclamationTriangle + " \\$zLiveSplit client is not connected to the app");
+                UI::SameLine();
+                if (UI::CyanButton(Icons::Refresh + " Retry"))
+                    startnew(PluginSettings::RestartLiveSplitClient);
+                UI::SameLine();
+                if (UI::OrangeButton("Disable LiveSplit"))
+                    PluginSettings::LiveSplitClientEnabled = false;
             }
         }
 

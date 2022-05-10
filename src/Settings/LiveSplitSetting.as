@@ -62,7 +62,6 @@ namespace PluginSettings
             {
                 UI::SameLine();
                 if (UI::Button(Icons::Refresh + " Restart client")) startnew(RestartLiveSplitClient);
-                UI::SetPreviousTooltip("This will disable the client, then wait 1 second, then enable it again.");
             }
 
             LiveSplitClientEnabled = UI::WhiteCheckbox("Enable LiveSplit client", LiveSplitClientEnabled);
@@ -109,7 +108,7 @@ namespace PluginSettings
     void RestartLiveSplitClient()
     {
         LiveSplitClientEnabled = false;
-        sleep(1000);
+        yield();
         LiveSplitClientEnabled = true;
     }
 }

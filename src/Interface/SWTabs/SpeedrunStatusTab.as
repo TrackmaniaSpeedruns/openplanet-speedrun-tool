@@ -1,4 +1,4 @@
-class SpeedrunBeforeStart : SWTab
+class SpeedrunStatusTab : SWTab
 {
 
     string GetLabel() { return PLUGIN_ICON + " Status"; }
@@ -32,12 +32,26 @@ class SpeedrunBeforeStart : SWTab
         {
             if (UI::CyanButton(Icons::AngleDoubleRight + " Next map"))
             {
+                if (g_LiveSplit !is null && g_LiveSplit.connected)
+                {
+                    if (g_speedrun.actualMapCompleted) g_LiveSplit.split();
+                    else g_LiveSplit.skipsplit();
+                }
                 startnew(Speedrun::NextMap);
             }
             UI::SameLine();
             if (UI::RedButton(Icons::Times + " Stop speedrun"))
             {
+                if (g_LiveSplit !is null && g_LiveSplit.connected)
+                    g_LiveSplit.reset();
                 g_speedrun.IsRunning = false;
+            }
+            UI::SameLine();
+            if (UI::OrangeButton(Icons::Refresh + " Restart speedrun"))
+            {
+                if (g_LiveSplit !is null && g_LiveSplit.connected)
+                    g_LiveSplit.reset();
+                Speedrun::RestartSpeedrun();
             }
         }
         else

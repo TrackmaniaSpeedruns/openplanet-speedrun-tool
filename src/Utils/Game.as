@@ -8,3 +8,35 @@ void ClosePauseMenu()
         }
     }
 }
+
+CSmArenaRulesMode@ TryGetPlaygroundScript()
+{
+    CTrackMania@ app = cast<CTrackMania>(GetApp());
+    if (app !is null)
+    {
+        CSmArenaRulesMode@ playgroundScript = cast<CSmArenaRulesMode>(app.PlaygroundScript);
+        if (playgroundScript !is null)
+        {
+            return playgroundScript;
+        }
+    }
+    return null;
+}
+
+CGameDataFileManagerScript@ TryGetDataFileMgr()
+{
+    CTrackMania@ app = cast<CTrackMania>(GetApp());
+    if (app !is null)
+    {
+        CSmArenaRulesMode@ playgroundScript = cast<CSmArenaRulesMode>(app.PlaygroundScript);
+        if (playgroundScript !is null)
+        {
+            CGameDataFileManagerScript@ dataFileMgr = cast<CGameDataFileManagerScript>(playgroundScript.DataFileMgr);
+            if (dataFileMgr !is null)
+            {
+                return dataFileMgr;
+            }
+        }
+    }
+    return null;
+}

@@ -10,6 +10,9 @@ namespace PluginSettings
     bool WriteSpeedrunLog = true;
 
     [Setting hidden]
+    bool CreateReplayOnFinishMap = true;
+
+    [Setting hidden]
     string SwitcherNextMapOnMedal = Speedrun::Medals[0];
 
     [Setting hidden]
@@ -31,6 +34,8 @@ namespace PluginSettings
         SwitcherAutoloadNextMap = UI::WhiteCheckbox("Auto skip to Next Map (recommended)", SwitcherAutoloadNextMap);
         WriteSpeedrunLog = UI::WhiteCheckbox("Output speedruns log files", WriteSpeedrunLog);
         UI::SetPreviousTooltip("You can find your log files in " + IO::FromUserGameFolder("Speedruns"));
+
+        CreateReplayOnFinishMap = UI::WhiteCheckbox("Create replays", CreateReplayOnFinishMap);
 
         if (g_LiveSplit !is null && g_LiveSplit.connected)
             LiveSplitStartTimerOnSpawn = UI::WhiteCheckbox("Start timer after 3,2,1 countdown", LiveSplitStartTimerOnSpawn);

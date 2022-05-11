@@ -4,6 +4,8 @@ class Speedrun
     bool firstMap = false;
     bool logInitialized = false;
     string logFileName = "";
+    string actualSpeedrunPath = "";
+    int mapCounter = 0;
     int MapCompleteTime = 0;
     int SumCompleteTime = 0;
 
@@ -12,6 +14,9 @@ class Speedrun
     CampaignSummary@ currentCampaign;
 
     array<MapInfo@> mapPlaylist;
+
+    CGameDataFileManagerScript@ gameDataFileManager;
+    CSmArenaRulesMode@ playgroundScript;
 
     PlayerState::sTMData@ TMData;
 
@@ -27,6 +32,9 @@ class Speedrun
 
                 if (logInitialized)
                     WriteSpeedrunLog();
+
+                if (PluginSettings::CreateReplayOnFinishMap)
+                    CreateReplay();
 
                 if (PluginSettings::SwitcherAutoloadNextMap)
                 {
@@ -124,13 +132,18 @@ class Speedrun
         }
     }
 
-    void InitSpeedrunLog(bool newFile = true)
+    void InitSpeedrunPath()
     {
         string speedrunPath = IO::FromUserGameFolder("Speedruns");
         if (!IO::FolderExists(speedrunPath)) IO::CreateFolder(speedrunPath);
+        actualSpeedrunPath = speedrunPath + "/" + Time::FormatString("%F_%H-%M-%S");
+        if (!IO::FolderExists(actualSpeedrunPath)) IO::CreateFolder(actualSpeedrunPath);
+    }
 
+    void InitSpeedrunLog(bool newFile = true)
+    {
         if (newFile)
-            logFileName = speedrunPath + "/" + Time::FormatString("%F_%H-%M-%S") + ".txt";
+            logFileName = actualSpeedrunPath + "/" + Time::FormatString("%F_%H-%M-%S") + ".txt";
 
         IO::File file(logFileName);
         file.Open(IO::FileMode::Append);
@@ -158,6 +171,54 @@ class Speedrun
         file.WriteLine();
         file.WriteLine("End of speedrun at " + Time::FormatString("%F %T"));
 	    file.Close();
+    }
+
+    void CreateReplay()
+    {
+        @gameDataFileManager = TryGetDataFileMgr();
+        if (@gameDataFileManager is null)
+        {
+            warn("Could not get game data file manager");
+            UI::ShowNotification("Error: replay cannot be created for this run");
+            return;
+        }
+        @playgroundScript = TryGetPlaygroundScript();
+        if (@playgroundScript is null)
+        {
+            warn("Could not get playground script");
+            UI::ShowNotification("Error: replay cannot be created for this run");
+            return;
+        }
+        CTrackMania@ app = cast<CTrackMania>(GetApp());
+        if (app.RootMap is null)
+        {
+            warn("Could not get root map");
+            UI::ShowNotification("Error: replay cannot be created for this run");
+            return;
+        }
+        CGamePlayground@ GamePlayground = cast<CGamePlayground>(app.CurrentPlayground);
+        if (GamePlayground.GameTerminals.get_Length() > 0)
+        {
+            CSmPlayer@ player = cast<CSmPlayer>(GamePlayground.GameTerminals[0].ControlledPlayer);
+            if (player !is null)
+            {
+                CSmScriptPlayer@ playerScriptAPI = cast<CSmScriptPlayer>(player.ScriptAPI);
+                auto ghost = playgroundScript.Ghost_RetrieveFromPlayer(playerScriptAPI);
+                if (ghost !is null) {
+                    string safeMapName = StripFormatCodes(app.RootMap.MapName);
+                    string safeUserName = ghost.Nickname;
+                    string fmtGhostTime = Speedrun::FormatTimer(ghost.Result.Time).Replace(":", "-");
+                    string replayName = mapCounter + " - " + safeMapName + " - " + safeUserName + " - " + Time::FormatString("%F_%H-%M-%S") + " (" + fmtGhostTime + ")";
+
+                    string replayPath = actualSpeedrunPath + "/" + replayName;
+                    gameDataFileManager.Replay_Save(replayPath, app.RootMap, ghost);
+                    playgroundScript.DataFileMgr.Ghost_Release(ghost.Id);
+                }
+                else UI::ShowNotification("Error: replay cannot be created for this run");
+            }
+            else UI::ShowNotification("Error: replay cannot be created for this run");
+        }
+        else UI::ShowNotification("Error: replay cannot be created for this run");
     }
 }
 
@@ -191,8 +252,11 @@ namespace Speedrun
             yield();
         }
         UI::ShowNotification("Loading map...", ColoredString(g_speedrun.mapPlaylist[0].name));
+        g_speedrun.mapCounter = 1;
         app.ManiaTitleControlScriptAPI.PlayMap(g_speedrun.mapPlaylist[0].file_url, "", "");
         g_speedrun.mapPlaylist.RemoveAt(0);
+
+        g_speedrun.InitSpeedrunPath();
 
         if (PluginSettings::WriteSpeedrunLog)
             g_speedrun.InitSpeedrunLog(true);
@@ -211,6 +275,7 @@ namespace Speedrun
             }
             UI::ShowNotification("Loading map...", ColoredString(g_speedrun.mapPlaylist[0].name));
             UI::HideOverlay();
+            g_speedrun.mapCounter++;
             app.ManiaTitleControlScriptAPI.PlayMap(g_speedrun.mapPlaylist[0].file_url, "", "");
             g_speedrun.mapPlaylist.RemoveAt(0);
         }

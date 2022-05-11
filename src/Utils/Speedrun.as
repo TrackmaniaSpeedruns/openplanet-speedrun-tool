@@ -2,6 +2,7 @@ class Speedrun
 {
     bool IsRunning = false;
     bool firstMap = false;
+    bool actualMapCompleted = false;
     bool logInitialized = false;
     string logFileName = "";
     string logFileCode = "";
@@ -14,6 +15,7 @@ class Speedrun
     Campaigns::campaignType currentCampaignType = Campaigns::campaignType::Unknown;
 
     CampaignSummary@ currentCampaign;
+    array<CampaignSummary@> pastCampaigns;
 
     array<MapInfo@> mapPlaylist;
 
@@ -40,6 +42,12 @@ class Speedrun
 
             if (TMData.dEventInfo.FinishRun)
             {
+                if (actualMapCompleted) //if actual map is already completed (finish 2nd time on same map)
+                {
+                    UI::ShowNotification("Map already completed");
+                    return;
+                }
+
                 MapCompleteTime = TMData.dPlayerInfo.EndTime;
                 SumCompleteTime += MapCompleteTime;
                 SumCompleteTimeWithRespawns += MapCompleteTime;
@@ -50,28 +58,43 @@ class Speedrun
                 if (PluginSettings::CreateReplayOnFinishMap)
                     CreateReplay();
 
-                if (PluginSettings::SwitcherAutoloadNextMap)
+                if (PluginSettings::SwitcherNextMapOnMedal != Speedrun::Medals[0])
                 {
-                    if (PluginSettings::SwitcherNextMapOnMedal != Speedrun::Medals[0])
+                    int author = TMData.dMapInfo.TMObjective_AuthorTime;
+                    int gold = TMData.dMapInfo.TMObjective_GoldTime;
+                    int silver = TMData.dMapInfo.TMObjective_SilverTime;
+                    int bronze = TMData.dMapInfo.TMObjective_BronzeTime;
+                    if (
+                        (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[4] && MapCompleteTime <= author) ||
+                        (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[3] && MapCompleteTime <= gold) ||
+                        (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[2] && MapCompleteTime <= silver) ||
+                        (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[1] && MapCompleteTime <= bronze)
+                    )
                     {
-                        int author = TMData.dMapInfo.TMObjective_AuthorTime;
-                        int gold = TMData.dMapInfo.TMObjective_GoldTime;
-                        int silver = TMData.dMapInfo.TMObjective_SilverTime;
-                        int bronze = TMData.dMapInfo.TMObjective_BronzeTime;
-                        if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[4] && MapCompleteTime <= author)
+                        if (PluginSettings::SwitcherAutoloadNextMap)
                             startnew(Speedrun::NextMap);
-                        else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[3] && MapCompleteTime <= gold)
-                            startnew(Speedrun::NextMap);
-                        else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[2] && MapCompleteTime <= silver)
-                            startnew(Speedrun::NextMap);
-                        else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[1] && MapCompleteTime <= bronze)
-                            startnew(Speedrun::NextMap);
+                        else
+                        {
+                            actualMapCompleted = true;
+                            firstMap = false; // don't reset timer
+                            UI::ShowNotification("Map completed", "Use the button 'next map' on the menu to load the next map");
+                        }
                     }
-                    else startnew(Speedrun::NextMap);
+                }
+                else
+                {
+                    if (PluginSettings::SwitcherAutoloadNextMap)
+                        startnew(Speedrun::NextMap);
+                    else
+                    {
+                        actualMapCompleted = true;
+                        firstMap = false;
+                        UI::ShowNotification("Map completed", "Use the button 'next map' on the menu to load the next map");
+                    }
                 }
             }
 
-            if (g_LiveSplit !is null)
+            if (g_LiveSplit !is null && g_LiveSplit.connected)
                 LiveSplitUpdateLoop();
         }
         else
@@ -104,7 +127,7 @@ class Speedrun
                     g_LiveSplit.resume();
             }
 
-            if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Menus || TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Finished)
+            if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Finished)
                 g_LiveSplit.pause();
 
             if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown)
@@ -116,7 +139,16 @@ class Speedrun
             }
         }
 
-        if (TMData.dEventInfo.FinishRun && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[0])
+        if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Menus)
+            g_LiveSplit.pause();
+
+        if (g_speedrun.TMData.IsSpectator)
+            g_LiveSplit.pause();
+
+        if (
+            (TMData.dEventInfo.FinishRun && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[0]) ||
+            (TMData.dEventInfo.FinishRun && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[2] && !TMData.dMapInfo.bIsMultiLap)
+        )
         {
             if (PluginSettings::SwitcherNextMapOnMedal != Speedrun::Medals[0])
             {
@@ -124,19 +156,26 @@ class Speedrun
                 int gold = TMData.dMapInfo.TMObjective_GoldTime;
                 int silver = TMData.dMapInfo.TMObjective_SilverTime;
                 int bronze = TMData.dMapInfo.TMObjective_BronzeTime;
-                if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[4] && MapCompleteTime <= author)
-                    g_LiveSplit.split();
-                else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[3] && MapCompleteTime <= gold)
-                    g_LiveSplit.split();
-                else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[2] && MapCompleteTime <= silver)
-                    g_LiveSplit.split();
-                else if (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[1] && MapCompleteTime <= bronze)
+                if (
+                    !actualMapCompleted && (
+                        (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[4] && MapCompleteTime <= author) ||
+                        (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[3] && MapCompleteTime <= gold) ||
+                        (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[2] && MapCompleteTime <= silver) ||
+                        (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[1] && MapCompleteTime <= bronze)
+                    )
+                )
                     g_LiveSplit.split();
             }
-            else g_LiveSplit.split();
+            else
+            {
+                if (!actualMapCompleted) g_LiveSplit.split();
+            }
         }
 
         if (TMData.dEventInfo.CheckpointChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[1])
+            g_LiveSplit.split();
+
+        if (TMData.dMapInfo.bIsMultiLap && TMData.dEventInfo.LapChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[2])
             g_LiveSplit.split();
 
         if (TMData.dEventInfo.PauseChange)
@@ -205,49 +244,35 @@ class Speedrun
     void CreateReplay()
     {
         @gameDataFileManager = TryGetDataFileMgr();
-        if (@gameDataFileManager is null)
-        {
-            warn("Could not get game data file manager");
-            UI::ShowNotification("Error: replay cannot be created for this run");
-            return;
-        }
         @playgroundScript = TryGetPlaygroundScript();
-        if (@playgroundScript is null)
-        {
-            warn("Could not get playground script");
-            UI::ShowNotification("Error: replay cannot be created for this run");
-            return;
-        }
         CTrackMania@ app = cast<CTrackMania>(GetApp());
-        if (app.RootMap is null)
-        {
-            warn("Could not get root map");
-            UI::ShowNotification("Error: replay cannot be created for this run");
-            return;
-        }
         CGamePlayground@ GamePlayground = cast<CGamePlayground>(app.CurrentPlayground);
-        if (GamePlayground.GameTerminals.get_Length() > 0)
+        if (app.RootMap !is null)
         {
-            CSmPlayer@ player = cast<CSmPlayer>(GamePlayground.GameTerminals[0].ControlledPlayer);
-            if (player !is null)
+            if (playgroundScript !is null && GamePlayground.GameTerminals.get_Length() > 0)
             {
-                CSmScriptPlayer@ playerScriptAPI = cast<CSmScriptPlayer>(player.ScriptAPI);
-                auto ghost = playgroundScript.Ghost_RetrieveFromPlayer(playerScriptAPI);
-                if (ghost !is null) {
-                    string safeMapName = StripFormatCodes(app.RootMap.MapName);
-                    string safeUserName = ghost.Nickname;
-                    string fmtGhostTime = Speedrun::FormatTimer(ghost.Result.Time).Replace(":", "-");
-                    string replayName = mapCounter + " - " + safeMapName + " - " + safeUserName + " - " + Time::FormatString("%F_%H-%M-%S") + " (" + fmtGhostTime + ")";
+                CSmPlayer@ player = cast<CSmPlayer>(GamePlayground.GameTerminals[0].ControlledPlayer);
+                if (player !is null)
+                {
+                    CSmScriptPlayer@ playerScriptAPI = cast<CSmScriptPlayer>(player.ScriptAPI);
+                    if (playerScriptAPI !is null)
+                    {
+                        auto ghost = playgroundScript.Ghost_RetrieveFromPlayer(playerScriptAPI);
+                        if (ghost !is null)
+                        {
+                            string safeMapName = StripFormatCodes(app.RootMap.MapName);
+                            string safeUserName = ghost.Nickname;
+                            string fmtGhostTime = Speedrun::FormatTimer(ghost.Result.Time).Replace(":", "-");
+                            string replayName = mapCounter + " - " + safeMapName + " - " + safeUserName + " - " + Time::FormatString("%F_%H-%M-%S") + " (" + fmtGhostTime + ")";
 
-                    string replayPath = actualSpeedrunPath + "/" + replayName;
-                    gameDataFileManager.Replay_Save(replayPath, app.RootMap, ghost);
-                    playgroundScript.DataFileMgr.Ghost_Release(ghost.Id);
-                }
-                else UI::ShowNotification("Error: replay cannot be created for this run");
-            }
-            else UI::ShowNotification("Error: replay cannot be created for this run");
-        }
-        else UI::ShowNotification("Error: replay cannot be created for this run");
+                            string replayPath = actualSpeedrunPath + "/" + replayName;
+                            gameDataFileManager.Replay_Save(replayPath, app.RootMap, ghost);
+                            playgroundScript.DataFileMgr.Ghost_Release(ghost.Id);
+                        } else UI::ShowNotification("Error: replay cannot be created for this run");
+                    } else UI::ShowNotification("Error: replay cannot be created for this run");
+                } else UI::ShowNotification("Error: replay cannot be created for this run");
+            } else UI::ShowNotification("Error: replay cannot be created for this run");
+        } else UI::ShowNotification("Error: replay cannot be created for this run");
     }
 }
 
@@ -272,6 +297,7 @@ namespace Speedrun
         g_speedrun.currentCampaignType = campaign.type;
         @g_speedrun.currentCampaign = campaign;
         FetchCampaign(campaign.id, campaign.clubid);
+        g_speedrun.pastCampaigns.InsertLast(campaign);
         g_SpeedrunWindow.selectedCampaigns.RemoveAt(0);
         UI::HideOverlay();
         ClosePauseMenu();
@@ -294,6 +320,7 @@ namespace Speedrun
     void NextMap()
     {
         g_speedrun.firstMap = false;
+        g_speedrun.actualMapCompleted = false;
         if (g_speedrun.mapPlaylist.Length > 0)
         {
             ClosePauseMenu();
@@ -318,6 +345,7 @@ namespace Speedrun
                 @g_speedrun.currentCampaign = campaign;
                 UI::ShowNotification("Switching to campaign: " + ColoredString(campaign.name));
                 FetchCampaign(campaign.id, campaign.clubid);
+                g_speedrun.pastCampaigns.InsertLast(campaign);
                 g_SpeedrunWindow.selectedCampaigns.RemoveAt(0);
                 if (PluginSettings::WriteSpeedrunLog)
                     g_speedrun.InitSpeedrunLog(false);
@@ -332,6 +360,20 @@ namespace Speedrun
                 g_speedrun.IsRunning = false;
             }
         }
+    }
+
+    void RestartSpeedrun()
+    {
+        // remove all maps from queue
+        g_speedrun.mapPlaylist.RemoveRange(0, g_speedrun.mapPlaylist.Length);
+
+        // Take all pased campaigns and put them back in the campaign list
+        for (uint i = 0; i < g_speedrun.pastCampaigns.Length; i++)
+        {
+            g_SpeedrunWindow.selectedCampaigns.InsertAt(i, g_speedrun.pastCampaigns[i]);
+            g_speedrun.pastCampaigns.RemoveAt(i);
+        }
+        startnew(StartSpeedrun);
     }
 
     void FetchCampaign(int campaignId = 0, int clubId = 0)

@@ -21,6 +21,7 @@ namespace PluginSettings
     array<string> LiveSplitSplitOnSettings = {
         "Finish",
         "Checkpoint",
+        "Lap",
         "No split"
     };
 

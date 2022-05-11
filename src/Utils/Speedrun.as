@@ -82,6 +82,7 @@ class Speedrun
                     if (PluginSettings::LiveSplitStartTimerOnSpawn)
                     {
                         g_LiveSplit.StartTimer();
+                        g_LiveSplit.setgametime(0);
                         g_LiveSplit.resume();
                     }
                 }

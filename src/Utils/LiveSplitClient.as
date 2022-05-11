@@ -63,9 +63,17 @@ class LiveSplitClient
         }
     }
 
+    void setgametime(float timeSeconds)
+    {
+        if (connected) {
+            send("setgametime "+timeSeconds);
+        }
+    }
+
     void split()
     {
         if (connected) {
+            send("setgametime "+Speedrun::FormatTimer(g_speedrun.SumCompleteTime));
             send("split");
         }
     }
@@ -73,6 +81,7 @@ class LiveSplitClient
     void StartTimer()
     {
         if (connected) {
+            send("initgametime");
             send("starttimer");
         }
     }

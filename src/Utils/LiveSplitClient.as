@@ -73,7 +73,7 @@ class LiveSplitClient
     void split()
     {
         if (connected) {
-            send("setgametime "+Speedrun::FormatTimer(g_speedrun.SumCompleteTime));
+            send("setgametime "+Speedrun::FormatTimer(g_speedrun.SumCompleteTimeWithRespawns));
             send("split");
         }
     }

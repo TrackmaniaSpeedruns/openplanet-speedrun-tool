@@ -9,6 +9,7 @@ class Speedrun
     int mapCounter = 0;
     int MapCompleteTime = 0;
     int SumCompleteTime = 0;
+    int SumCompleteTimeWithRespawns = 0;
 
     Campaigns::campaignType currentCampaignType = Campaigns::campaignType::Unknown;
 
@@ -26,10 +27,22 @@ class Speedrun
         if (IsRunning)
         {
             @TMData = PlayerState::GetRaceData();
+            if (TMData.dEventInfo.PlayerStateChange)
+            {
+                if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_EndRace)
+                {
+                    if (g_speedrun.firstMap)
+                        SumCompleteTimeWithRespawns == 0;
+                    else
+                        SumCompleteTimeWithRespawns += TMData.dPlayerInfo.CurrentRaceTime;
+                }
+            }
+
             if (TMData.dEventInfo.FinishRun)
             {
                 MapCompleteTime = TMData.dPlayerInfo.EndTime;
                 SumCompleteTime += MapCompleteTime;
+                SumCompleteTimeWithRespawns += MapCompleteTime;
 
                 if (logInitialized)
                     WriteSpeedrunLog();
@@ -66,6 +79,7 @@ class Speedrun
             currentCampaignType = Campaigns::campaignType::Unknown;
             MapCompleteTime = 0;
             SumCompleteTime = 0;
+            SumCompleteTimeWithRespawns = 0;
             logInitialized = false;
             if (mapPlaylist.Length > 0) mapPlaylist.RemoveRange(0, mapPlaylist.Length);
         }
@@ -164,9 +178,8 @@ class Speedrun
         file.Open(IO::FileMode::Append);
         if (!newFile) file.WriteLine();
         file.WriteLine("Trackmania - " + StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T"));
-        file.WriteLine("(times without respawns)");
         file.WriteLine();
-        file.WriteLine("Sum | Segment | Track");
+        file.WriteLine("Sum (no rs) | Sum (with rs) | Segment | Track");
 	    file.Close();
         logInitialized = true;
     }
@@ -175,7 +188,7 @@ class Speedrun
     {
         IO::File file(logFileName);
         file.Open(IO::FileMode::Append);
-        file.WriteLine(Speedrun::FormatTimer(SumCompleteTime) + " | " + Speedrun::FormatTimer(MapCompleteTime) + " | " + StripFormatCodes(TMData.dMapInfo.MapName));
+        file.WriteLine(Speedrun::FormatTimer(SumCompleteTime) + " | " + Speedrun::FormatTimer(SumCompleteTimeWithRespawns) + " | " + Speedrun::FormatTimer(MapCompleteTime) + " | " + StripFormatCodes(TMData.dMapInfo.MapName));
 	    file.Close();
     }
 

@@ -134,24 +134,7 @@ class SpeedrunBeforeStart : SWTab
         UI::NextColumn();
         UI::BeginChild("SpeedrunSettings");
         UI::Text("Speedrun Settings:");
-        PluginSettings::RenderSwitcherSettings();
-        UI::Text("Split at every");
-        UI::SameLine();
-        UI::SetNextItemWidth(120);
-        if (UI::BeginCombo("###SplitOptionCombo", PluginSettings::LiveSplitSplitOn)){
-            for (uint i = 0; i < PluginSettings::LiveSplitSplitOnSettings.Length; i++) {
-                string split = PluginSettings::LiveSplitSplitOnSettings[i];
-
-                if (UI::Selectable(split, PluginSettings::LiveSplitSplitOn == split)) {
-                    PluginSettings::LiveSplitSplitOn = split;
-                }
-
-                if (PluginSettings::LiveSplitSplitOn == split) {
-                    UI::SetItemDefaultFocus();
-                }
-            }
-            UI::EndCombo();
-        }
+        PluginSettings::RenderSpeedrunSettings();
         UI::EndChild();
     }
 }

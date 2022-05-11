@@ -16,18 +16,6 @@ namespace PluginSettings
     [Setting hidden]
     int LiveSplitPort = 16834;
 
-    [Setting hidden]
-    bool LiveSplitStartTimerOnSpawn = true;
-
-    array<string> LiveSplitSplitOnSettings = {
-        "Finish",
-        "Checkpoint",
-        "No split"
-    };
-
-    [Setting hidden]
-    string LiveSplitSplitOn = LiveSplitSplitOnSettings[0];
-
     [SettingsTab name="LiveSplit"]
     void RenderLiveSplitSettings()
     {
@@ -70,29 +58,6 @@ namespace PluginSettings
             {
                 LiveSplitHost = UI::InputText("IP address / hostname", LiveSplitHost);
                 LiveSplitPort = UI::InputInt("Port", LiveSplitPort);
-            }
-            UI::EndTabItem();
-        }
-        if (UI::BeginTabItem(Icons::Hourglass + " Splitter Options"))
-        {
-            LiveSplitStartTimerOnSpawn = UI::WhiteCheckbox("Start timer after 3,2,1 countdown", LiveSplitStartTimerOnSpawn);
-
-            UI::Text("Split at every");
-            UI::SameLine();
-            UI::SetNextItemWidth(120);
-            if (UI::BeginCombo("###SplitOptionCombo", LiveSplitSplitOn)){
-                for (uint i = 0; i < LiveSplitSplitOnSettings.Length; i++) {
-                    string split = LiveSplitSplitOnSettings[i];
-
-                    if (UI::Selectable(split, LiveSplitSplitOn == split)) {
-                        LiveSplitSplitOn = split;
-                    }
-
-                    if (LiveSplitSplitOn == split) {
-                        UI::SetItemDefaultFocus();
-                    }
-                }
-                UI::EndCombo();
             }
             UI::EndTabItem();
         }

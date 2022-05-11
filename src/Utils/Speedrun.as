@@ -8,6 +8,7 @@ class Speedrun
     string logFileCode = "";
     string actualSpeedrunPath = "";
     int mapCounter = 0;
+    int resetCounter = 0;
     int MapCompleteTime = 0;
     int SumCompleteTime = 0;
     int SumCompleteTimeWithRespawns = 0;
@@ -36,7 +37,13 @@ class Speedrun
                     if (g_speedrun.firstMap)
                         SumCompleteTimeWithRespawns == 0;
                     else
+                    {
+                        MapCompleteTime = TMData.dPlayerInfo.CurrentRaceTime;
                         SumCompleteTimeWithRespawns += TMData.dPlayerInfo.CurrentRaceTime;
+                        resetCounter++;
+                        if (logInitialized)
+                            WriteSpeedrunLog(true);
+                    }
                 }
             }
 
@@ -218,16 +225,16 @@ class Speedrun
         if (!newFile) file.WriteLine();
         file.WriteLine("Trackmania - " + StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T"));
         file.WriteLine();
-        file.WriteLine("Sum (no rs) | Sum (with rs) | Segment | Track");
+        file.WriteLine("Sum | Segment | Track");
 	    file.Close();
         logInitialized = true;
     }
 
-    void WriteSpeedrunLog()
+    void WriteSpeedrunLog(bool isReset = false)
     {
         IO::File file(logFileName);
         file.Open(IO::FileMode::Append);
-        file.WriteLine(Speedrun::FormatTimer(SumCompleteTime) + " | " + Speedrun::FormatTimer(SumCompleteTimeWithRespawns) + " | " + Speedrun::FormatTimer(MapCompleteTime) + " | " + StripFormatCodes(TMData.dMapInfo.MapName));
+        file.WriteLine(Speedrun::FormatTimer(SumCompleteTimeWithRespawns) + " | " + Speedrun::FormatTimer(MapCompleteTime) + " | " + StripFormatCodes(TMData.dMapInfo.MapName) + (isReset ? (" (Reset "+resetCounter+")") : ""));
 	    file.Close();
     }
 

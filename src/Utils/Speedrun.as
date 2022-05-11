@@ -4,6 +4,7 @@ class Speedrun
     bool firstMap = false;
     bool logInitialized = false;
     string logFileName = "";
+    string logFileCode = "";
     string actualSpeedrunPath = "";
     int mapCounter = 0;
     int MapCompleteTime = 0;
@@ -143,7 +144,20 @@ class Speedrun
     void InitSpeedrunLog(bool newFile = true)
     {
         if (newFile)
-            logFileName = actualSpeedrunPath + "/" + Time::FormatString("%F_%H-%M-%S") + ".txt";
+        {
+            array<string> base36Chars = "0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z".Split(",");
+            int64 gameReleaseTimestamp = 1593558000;
+            int64 stampDiffSeconds = Time::Stamp - gameReleaseTimestamp;
+            int minutesDateTime = stampDiffSeconds / 60;
+            string base36DateTime = "";
+            while(minutesDateTime > 0) {
+                base36DateTime = base36Chars[minutesDateTime % 36] + base36DateTime;
+                print(base36DateTime + " - " + minutesDateTime);
+                minutesDateTime /= 36;
+            }
+            logFileCode = PadLeft(base36DateTime, 5, "_");
+            logFileName = actualSpeedrunPath + "/" + logFileCode + ".txt";
+        }
 
         IO::File file(logFileName);
         file.Open(IO::FileMode::Append);
@@ -171,6 +185,7 @@ class Speedrun
         file.WriteLine();
         file.WriteLine("End of speedrun at " + Time::FormatString("%F %T"));
 	    file.Close();
+        IO::Move(logFileName, actualSpeedrunPath + "/" + logFileCode+"_"+Speedrun::FormatTimer(SumCompleteTime).Replace(":", ".") + ".txt");
     }
 
     void CreateReplay()

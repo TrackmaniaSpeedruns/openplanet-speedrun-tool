@@ -108,4 +108,11 @@ class LiveSplitClient
             send("reset");
         }
     }
+
+    void skipsplit()
+    {
+        if (connected) {
+            send("skipsplit");
+        }
+    }
 }

@@ -250,7 +250,7 @@ class Speedrun
         file.WriteLine();
         file.WriteLine("End of speedrun at " + Time::FormatString("%F %T"));
 	    file.Close();
-        IO::Move(logFileName, actualSpeedrunPath + "/" + logFileCode+"_"+Speedrun::FormatTimer(SumCompleteTime).Replace(":", ".") + ".txt");
+        IO::Move(logFileName, actualSpeedrunPath + "/" + logFileCode+"_"+Speedrun::FormatTimer(SumCompleteTimeWithRespawns).Replace(":", ".") + ".txt");
     }
 
     void CreateReplay()

@@ -4,7 +4,7 @@ namespace PluginSettings
     bool SwitcherPreloadCache = false;
 
     [Setting hidden]
-    bool HideUIOnLoadMap = false;
+    bool HideUIOnLoadMap = true;
 
     [Setting hidden]
     bool SwitcherAutoloadNextMap = true;

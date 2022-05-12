@@ -2,6 +2,7 @@
 name = "Speedrun"
 author = "Greep"
 category = "Speedrunning"
+siteid = 199
 
 version = "1.0"
 

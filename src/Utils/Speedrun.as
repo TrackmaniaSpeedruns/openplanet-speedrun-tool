@@ -311,7 +311,7 @@ namespace Speedrun
         FetchCampaign(campaign.id, campaign.clubid);
         g_speedrun.pastCampaigns.InsertLast(campaign);
         g_SpeedrunWindow.selectedCampaigns.RemoveAt(0);
-        UI::HideOverlay();
+        if (PluginSettings::HideUIOnLoadMap) UI::HideOverlay();
         ClosePauseMenu();
         CTrackMania@ app = cast<CTrackMania>(GetApp());
         app.BackToMainMenu();
@@ -342,7 +342,7 @@ namespace Speedrun
                 yield();
             }
             UI::ShowNotification("Loading map...", ColoredString(g_speedrun.mapPlaylist[0].name));
-            UI::HideOverlay();
+            if (PluginSettings::HideUIOnLoadMap) UI::HideOverlay();
             g_speedrun.mapCounter++;
             app.ManiaTitleControlScriptAPI.PlayMap(g_speedrun.mapPlaylist[0].file_url, "", "");
             g_speedrun.mapPlaylist.RemoveAt(0);

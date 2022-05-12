@@ -4,6 +4,9 @@ namespace PluginSettings
     bool SwitcherPreloadCache = false;
 
     [Setting hidden]
+    bool HideUIOnLoadMap = false;
+
+    [Setting hidden]
     bool SwitcherAutoloadNextMap = true;
 
     [Setting hidden]
@@ -33,6 +36,7 @@ namespace PluginSettings
     {
         // SwitcherPreloadCache = UI::WhiteCheckbox("Preload Cache", SwitcherPreloadCache);
         SwitcherAutoloadNextMap = UI::WhiteCheckbox("Auto skip to Next Map (recommended)", SwitcherAutoloadNextMap);
+        HideUIOnLoadMap = UI::WhiteCheckbox("Hide Openplanet UI on map loading", HideUIOnLoadMap);
         WriteSpeedrunLog = UI::WhiteCheckbox("Output speedruns log files", WriteSpeedrunLog);
         UI::SetPreviousTooltip("You can find your log files in " + IO::FromUserGameFolder("Speedruns"));
 

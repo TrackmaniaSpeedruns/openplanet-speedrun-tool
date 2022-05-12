@@ -41,7 +41,7 @@ class LiveSplitClient
     void send(const string&in command)
     {
         if (sock !is null) {
-            trace("Sending command to LiveSplit server: "+command);
+            if (IS_DEV_MODE) trace("Sending command to LiveSplit server: "+command);
             sock.WriteRaw(command+"\r\n");
         }
     }

@@ -224,7 +224,6 @@ class Speedrun
             string base36DateTime = "";
             while(minutesDateTime > 0) {
                 base36DateTime = base36Chars[minutesDateTime % 36] + base36DateTime;
-                print(base36DateTime + " - " + minutesDateTime);
                 minutesDateTime /= 36;
             }
             logFileCode = PadLeft(base36DateTime, 5, "_");

@@ -237,7 +237,9 @@ class Speedrun
     {
         IO::File file(logFileName);
         file.Open(IO::FileMode::Append);
-        file.WriteLine(Speedrun::FormatTimer(SumCompleteTimeWithRespawns) + " | " + Speedrun::FormatTimer(MapCompleteTime) + " | " + StripFormatCodes(TMData.dMapInfo.MapName) + (isReset ? (" (Reset "+resetCounter+")") : ""));
+        string line = Speedrun::FormatTimer(SumCompleteTimeWithRespawns) + " | " + Speedrun::FormatTimer(MapCompleteTime) + " | " + StripFormatCodes(TMData.dMapInfo.MapName) + (isReset ? (" (Reset "+resetCounter+")") : "");
+        print(line);
+        file.WriteLine(line);
 	    file.Close();
     }
 

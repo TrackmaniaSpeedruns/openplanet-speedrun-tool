@@ -34,15 +34,18 @@ class Speedrun
             {
                 if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_EndRace)
                 {
-                    if (g_speedrun.firstMap)
-                        SumCompleteTimeWithRespawns == 0;
-                    else
+                    if (!TMData.dEventInfo.FinishRun)
                     {
-                        MapCompleteTime = TMData.dPlayerInfo.CurrentRaceTime;
-                        SumCompleteTimeWithRespawns += TMData.dPlayerInfo.CurrentRaceTime;
-                        resetCounter++;
-                        if (logInitialized)
-                            WriteSpeedrunLog(true);
+                        if (g_speedrun.firstMap)
+                            SumCompleteTimeWithRespawns == 0;
+                        else
+                        {
+                            MapCompleteTime = TMData.dPlayerInfo.CurrentRaceTime;
+                            SumCompleteTimeWithRespawns += TMData.dPlayerInfo.CurrentRaceTime;
+                            resetCounter++;
+                            if (logInitialized)
+                                WriteSpeedrunLog(true);
+                        }
                     }
                 }
             }

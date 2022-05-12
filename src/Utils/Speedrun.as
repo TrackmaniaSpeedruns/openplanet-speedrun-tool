@@ -27,9 +27,9 @@ class Speedrun
 
     void Update(float dt)
     {
+        @TMData = PlayerState::GetRaceData();
         if (IsRunning)
         {
-            @TMData = PlayerState::GetRaceData();
             if (TMData.dEventInfo.PlayerStateChange)
             {
                 if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_EndRace)
@@ -148,6 +148,9 @@ class Speedrun
             if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_EndRace && TMData.dEventInfo.FinishRun)
                 g_LiveSplit.pause();
 
+            if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Menus)
+                g_LiveSplit.pause();
+
             if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Countdown)
             {
                 if (g_speedrun.firstMap)
@@ -156,9 +159,6 @@ class Speedrun
                     g_LiveSplit.pause();
             }
         }
-
-        if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Menus)
-            g_LiveSplit.pause();
 
         if (g_speedrun.TMData.IsSpectator)
             g_LiveSplit.pause();

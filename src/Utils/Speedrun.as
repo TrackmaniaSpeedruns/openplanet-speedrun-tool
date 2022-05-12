@@ -425,12 +425,12 @@ namespace Speedrun
                     Json::Value dayJson = tmioRes["days"][i];
                     MapInfo@ newmap = MapInfo();
                     newmap.campaignId = dayJson["campaignid"];
-                    newmap.author = dayJson["author"];
-                    newmap.name = dayJson["name"];
-                    newmap.filename = dayJson["filename"];
-                    newmap.uid = dayJson["mapUid"];
-                    newmap.file_url = dayJson["fileUrl"];
-                    newmap.exchange_id = dayJson["exchangeid"];
+                    newmap.author = dayJson["map"]["authorplayer"]["name"];
+                    newmap.name = dayJson["map"]["name"];
+                    newmap.filename = dayJson["map"]["filename"];
+                    newmap.uid = dayJson["map"]["mapUid"];
+                    newmap.file_url = dayJson["map"]["fileUrl"];
+                    newmap.exchange_id = dayJson["map"]["exchangeid"];
                     if (IS_DEV_MODE) trace("Adding TOTD map: " + StripFormatCodes(newmap.name) + " to speedrun playlist");
                     g_speedrun.mapPlaylist.InsertLast(newmap);
                 }

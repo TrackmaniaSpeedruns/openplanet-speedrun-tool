@@ -47,7 +47,7 @@ class SpeedrunStatusTab : SWTab
                 g_speedrun.IsRunning = false;
             }
             UI::SameLine();
-            if (UI::OrangeButton(Icons::Refresh + " Restart speedrun"))
+            if (UI::OrangeButton(Icons::Refresh + " Restart speedrun (Shift+Del)"))
             {
                 if (g_LiveSplit !is null && g_LiveSplit.connected)
                     g_LiveSplit.reset();

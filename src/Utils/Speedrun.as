@@ -496,4 +496,24 @@ namespace Speedrun
 
         return result;
     }
+
+    bool heldShift = false;
+    bool OnKeyPress(bool down, VirtualKey key) {
+        if (g_speedrun.IsRunning)
+        {
+            if (key == VirtualKey::Shift) {
+                if(down) {
+                    heldShift = true;
+                } else {
+                    heldShift = false;
+                }
+            } else if(heldShift && key == VirtualKey::Delete && !g_speedrun.firstMap) {
+                UI::ShowNotification("Restarting speedrun...");
+                print("Press Shift + Delete to reset the speedrun");
+                RestartSpeedrun();
+                return true;
+            }
+        }
+        return false;
+    }
 }

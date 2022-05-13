@@ -96,3 +96,7 @@ void waitForEnableLiveSplit()
         }
     }
 }
+
+UI::InputBlocking OnKeyPress(bool down, VirtualKey key){
+    return Speedrun::OnKeyPress(down, key) ? UI::InputBlocking::Block : UI::InputBlocking::DoNothing;
+}

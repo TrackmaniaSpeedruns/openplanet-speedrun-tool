@@ -383,6 +383,13 @@ namespace Speedrun
 
     void RestartSpeedrun()
     {
+        g_speedrun.currentCampaignType = Campaigns::campaignType::Unknown;
+        g_speedrun.MapCompleteTime = 0;
+        g_speedrun.SumCompleteTime = 0;
+        g_speedrun.SumCompleteTimeWithRespawns = 0;
+        g_speedrun.resetCounter = 0;
+        g_speedrun.logInitialized = false;
+
         // remove all maps from queue
         g_speedrun.mapPlaylist.RemoveRange(0, g_speedrun.mapPlaylist.Length);
 

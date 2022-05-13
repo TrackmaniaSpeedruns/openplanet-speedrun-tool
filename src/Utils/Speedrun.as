@@ -233,7 +233,7 @@ class Speedrun
         IO::File file(logFileName);
         file.Open(IO::FileMode::Append);
         if (!newFile) file.WriteLine();
-        file.WriteLine("Trackmania - " + StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T"));
+        file.WriteLine("Trackmania - " + StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T") + " - Speedrun plugin version " + Meta::ExecutingPlugin().Version);
         file.WriteLine();
         file.WriteLine("Sum | Segment | Track");
 	    file.Close();

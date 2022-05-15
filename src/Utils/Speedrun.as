@@ -200,14 +200,13 @@ class Speedrun
 
         if (TMData.dEventInfo.CheckpointChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[1])
         {
-            print("should split");
-            g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + TMData.dPlayerInfo.LatestCPTime));
+            g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + (TMData.dEventInfo.FinishRun ? TMData.dPlayerInfo.LatestCPTime : 0) ));
             g_LiveSplit.split();
         }
 
         if (TMData.dMapInfo.bIsMultiLap && TMData.dEventInfo.LapChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[2])
         {
-            g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + TMData.dPlayerInfo.LatestCPTime));
+            g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + (TMData.dEventInfo.FinishRun ? TMData.dPlayerInfo.LatestCPTime : 0)));
             g_LiveSplit.split();
         }
 

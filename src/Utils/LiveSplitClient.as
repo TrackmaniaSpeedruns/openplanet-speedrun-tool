@@ -6,6 +6,7 @@ class LiveSplitClient
     string lastResult = "";
     int connexionAttemptDelay = 0;
     int connexionAttemptDelayMax = 200;
+    bool isTimerPaused = false;
 
     LiveSplitClient()
     {
@@ -63,7 +64,7 @@ class LiveSplitClient
         }
     }
 
-    void setgametime(float timeSeconds)
+    void setgametime(string timeSeconds)
     {
         if (connected) {
             send("setgametime "+timeSeconds);
@@ -73,7 +74,6 @@ class LiveSplitClient
     void split()
     {
         if (connected) {
-            send("setgametime "+Speedrun::FormatTimer(g_speedrun.SumCompleteTimeWithRespawns));
             send("split");
         }
     }
@@ -83,6 +83,7 @@ class LiveSplitClient
         if (connected) {
             send("initgametime");
             send("starttimer");
+            isTimerPaused = false;
         }
     }
 
@@ -91,6 +92,7 @@ class LiveSplitClient
         if (connected) {
             if (gameTime) send("pausegametime");
             else send("pause");
+            isTimerPaused = true;
         }
     }
 
@@ -99,6 +101,7 @@ class LiveSplitClient
         if (connected) {
             if (gameTime) send("unpausegametime");
             else send("resume");
+            isTimerPaused = false;
         }
     }
 

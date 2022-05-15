@@ -134,7 +134,7 @@ class Speedrun
                     if (PluginSettings::LiveSplitStartTimerOnSpawn)
                     {
                         g_LiveSplit.StartTimer();
-                        g_LiveSplit.setgametime(0);
+                        g_LiveSplit.setgametime("0");
                         g_LiveSplit.resume();
                     }
                 }
@@ -157,10 +157,10 @@ class Speedrun
             }
         }
 
-        if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Menus)
+        if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Menus && !g_LiveSplit.isTimerPaused)
             g_LiveSplit.pause();
 
-        if (g_speedrun.TMData.IsSpectator)
+        if (g_speedrun.TMData.IsSpectator && !g_LiveSplit.isTimerPaused)
             g_LiveSplit.pause();
 
         if (
@@ -181,20 +181,33 @@ class Speedrun
                         (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[2] && MapCompleteTime <= silver) ||
                         (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[1] && MapCompleteTime <= bronze)
                     )
-                )
+                ) {
+                    g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns));
                     g_LiveSplit.split();
+                }
             }
             else
             {
-                if (!actualMapCompleted) g_LiveSplit.split();
+                if (!actualMapCompleted)
+                {
+                    g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns));
+                    g_LiveSplit.split();
+                }
             }
         }
 
         if (TMData.dEventInfo.CheckpointChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[1])
+        {
+            print("should split");
+            g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + TMData.dPlayerInfo.LatestCPTime));
             g_LiveSplit.split();
+        }
 
         if (TMData.dMapInfo.bIsMultiLap && TMData.dEventInfo.LapChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[2])
+        {
+            g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + TMData.dPlayerInfo.LatestCPTime));
             g_LiveSplit.split();
+        }
 
         if (TMData.dEventInfo.PauseChange)
         {

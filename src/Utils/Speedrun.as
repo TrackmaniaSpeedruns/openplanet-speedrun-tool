@@ -52,8 +52,8 @@ class Speedrun
                     else FinishRun();
                 }
 
-                // if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Finished)
-                //     FinishRun();
+                if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Finished)
+                    FinishRun();
             }
 
             if (g_LiveSplit !is null && g_LiveSplit.connected)

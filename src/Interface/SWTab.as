@@ -4,6 +4,7 @@ class SWTab
     bool CanClose() { return false; }
 
     string GetLabel() { return ""; }
+    string GetTooltip() { return ""; }
 
     vec4 GetColor() { return vec4(0.2f, 0.4f, 0.8f, 1); }
 

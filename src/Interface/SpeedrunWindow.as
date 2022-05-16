@@ -10,6 +10,7 @@ class SpeedrunWindow
     {
         AddTab(HomeSWTab());
         AddTab(SpeedrunStatusTab());
+        AddTab(FavoritesSWTab());
         AddTab(TrainingSelectSWTab());
         AddTab(OfficialCampaignsSelectSWTab());
         AddTab(TOTDSelectSWTab());
@@ -81,6 +82,7 @@ class SpeedrunWindow
                         UI::EndTabItem();
                     }
                 }
+                if (tab.GetTooltip().Length > 0) UI::SetPreviousTooltip(tab.GetTooltip());
 
                 tab.PopTabStyle();
 

@@ -16,19 +16,19 @@ class CampaignSummary
         timestamp = json["timestamp"];
         mapcount = json["mapcount"];
         if (json.HasKey("type") && json["type"].GetType() != Json::Type::Null) typeStr = json["type"];
-        else typeStr = "unknown";
+        else typeStr = "Unknown";
 
         // Parse type from tmio API (depending of the club id)
-        if (typeStr == "unknown")
+        if (typeStr == "Unknown")
         {
-            if (clubid == 0) typeStr = "season";
-            else typeStr = "club";
+            if (clubid == 0) typeStr = "Season";
+            else typeStr = "Club";
         }
 
         // we need to convert string to enum
-        if (typeStr == "season") type = Campaigns::campaignType::Season;
-        else if (typeStr == "club") type = Campaigns::campaignType::Club;
-        else if (typeStr == "training") type = Campaigns::campaignType::Training;
+        if (typeStr == "Season") type = Campaigns::campaignType::Season;
+        else if (typeStr == "Club") type = Campaigns::campaignType::Club;
+        else if (typeStr == "Training") type = Campaigns::campaignType::Training;
         else if (typeStr == "TOTD") type = Campaigns::campaignType::TOTD;
         else type = Campaigns::campaignType::Unknown;
     }
@@ -41,8 +41,7 @@ class CampaignSummary
         json["name"] = name;
         json["timestamp"] = timestamp;
         json["mapcount"] = mapcount;
-        json["type"] = type;
-        json["type_string"] = typeStr;
+        json["type"] = tostring(type);
         return json;
     }
 }

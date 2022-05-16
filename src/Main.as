@@ -5,6 +5,9 @@ Speedrun@ g_speedrun;
 
 void Main()
 {
+    if (DataJson.GetType() != Json::Type::Object)
+        DataManager::Init();
+
     @g_speedrun = Speedrun();
     @g_SpeedrunWindow = SpeedrunWindow();
     @g_LiveSplitDevWindow = LiveSplitDevWindow();

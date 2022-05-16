@@ -8,6 +8,7 @@ class HomeSWTab : SWTab
     }
 
     string GetLabel() override { return Icons::Home; }
+    string GetTooltip() override { return "Home"; }
 
     vec4 GetColor() override { return vec4(0, 0.645, 0.144, 1); }
 

@@ -10,7 +10,7 @@ class TrainingSelectSWTab : SWTab
         json["name"] = "Training";
         json["timestamp"] = 0;
         json["mapcount"] = 25;
-        json["type"] = "training";
+        json["type"] = "Training";
         @TrainingCampaignSummary = CampaignSummary(json);
     }
 

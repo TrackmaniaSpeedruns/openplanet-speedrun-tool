@@ -508,21 +508,62 @@ namespace Speedrun
         return result;
     }
 
-    bool heldShift = false;
+    bool heldResetComboKey = false;
+    bool heldNextMapComboKey = false;
     bool OnKeyPress(bool down, VirtualKey key) {
         if (g_speedrun.IsRunning)
         {
-            if (key == VirtualKey::Shift) {
-                if(down) {
-                    heldShift = true;
+            if (PluginSettings::KeysResetSpeedrunEnable) {
+                if (PluginSettings::KeysResetSpeedrunUseComboKeys) {
+                    if (key == PluginSettings::KeysResetSpeedrunKey1) {
+                        heldResetComboKey = down;
+                    } else if(heldResetComboKey && key == PluginSettings::KeysResetSpeedrunKey2 && !g_speedrun.firstMap) {
+                        UI::ShowNotification("Restarting speedrun...");
+                        RestartSpeedrun();
+                        return true;
+                    }
                 } else {
-                    heldShift = false;
+                    if (key == PluginSettings::KeysResetSpeedrunKey1 && !g_speedrun.firstMap) {
+                        UI::ShowNotification("Restarting speedrun...");
+                        RestartSpeedrun();
+                        return true;
+                    }
                 }
-            } else if(heldShift && key == VirtualKey::Delete && !g_speedrun.firstMap) {
-                UI::ShowNotification("Restarting speedrun...");
-                print("Pressed Shift + Delete to reset the speedrun");
-                RestartSpeedrun();
-                return true;
+            }
+            if (PluginSettings::KeysNextMapEnable) {
+                if (PluginSettings::KeysNextMapUseComboKeys) {
+                    if (key == PluginSettings::KeysNextMapSpeedrunKey1) {
+                        heldNextMapComboKey = down;
+                    } else if(heldNextMapComboKey && key == PluginSettings::KeysNextMapSpeedrunKey2) {
+                        UI::ShowNotification("Next map");
+                        if (g_LiveSplit !is null && g_LiveSplit.connected)
+                        {
+                            if (g_speedrun.actualMapCompleted)
+                            {
+                                g_LiveSplit.setgametime(Speedrun::FormatTimer(g_speedrun.SumCompleteTimeWithRespawns));
+                                g_LiveSplit.split();
+                            }
+                            else g_LiveSplit.skipsplit();
+                        }
+                        startnew(Speedrun::NextMap);
+                        return true;
+                    }
+                } else {
+                    if (key == PluginSettings::KeysNextMapSpeedrunKey1) {
+                        UI::ShowNotification("Next map");
+                        if (g_LiveSplit !is null && g_LiveSplit.connected)
+                        {
+                            if (g_speedrun.actualMapCompleted)
+                            {
+                                g_LiveSplit.setgametime(Speedrun::FormatTimer(g_speedrun.SumCompleteTimeWithRespawns));
+                                g_LiveSplit.split();
+                            }
+                            else g_LiveSplit.skipsplit();
+                        }
+                        startnew(Speedrun::NextMap);
+                        return true;
+                    }
+                }
             }
         }
         return false;

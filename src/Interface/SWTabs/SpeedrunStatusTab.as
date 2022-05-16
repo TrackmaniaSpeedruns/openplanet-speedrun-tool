@@ -33,12 +33,19 @@ class SpeedrunStatusTab : SWTab
             if (UI::CyanButton(
                 Icons::AngleDoubleRight + " Next map" +
                 (
-                    g_LiveSplit !is null &&
+                    (g_LiveSplit !is null &&
                     g_LiveSplit.connected &&
-                    !g_speedrun.actualMapCompleted :
+                    !g_speedrun.actualMapCompleted) ?
                     (" (" + Icons::ExclamationTriangle +" Skip split)"):""
+                ) + (PluginSettings::KeysNextMapEnable ? (PluginSettings::KeysNextMapUseComboKeys ?
+                        (
+                            " ("+tostring(PluginSettings::KeysNextMapSpeedrunKey1)+"+"+tostring(PluginSettings::KeysNextMapSpeedrunKey2)+")"
+                        ) : (
+                            " ("+tostring(PluginSettings::KeysNextMapSpeedrunKey1)+")"
+                        )
+                    ) : "")
                 )
-            ))
+            )
             {
                 if (g_LiveSplit !is null && g_LiveSplit.connected)
                 {
@@ -59,8 +66,17 @@ class SpeedrunStatusTab : SWTab
                 g_speedrun.IsRunning = false;
             }
             UI::SameLine();
-            if (UI::OrangeButton(Icons::Refresh + " Restart speedrun (Shift+Del)"))
-            {
+            if (UI::OrangeButton(Icons::Refresh + " Restart speedrun"+
+                (PluginSettings::KeysResetSpeedrunEnable ?
+                    (PluginSettings::KeysResetSpeedrunUseComboKeys ?
+                        (
+                            " ("+tostring(PluginSettings::KeysResetSpeedrunKey1)+"+"+tostring(PluginSettings::KeysResetSpeedrunKey2)+")"
+                        ) : (
+                            " ("+tostring(PluginSettings::KeysResetSpeedrunKey1)+")"
+                        )
+                    )
+                : "" )
+            )) {
                 if (g_LiveSplit !is null && g_LiveSplit.connected)
                     g_LiveSplit.reset();
                 Speedrun::RestartSpeedrun();

@@ -30,7 +30,6 @@ class Speedrun
         @TMData = PlayerState::GetRaceData();
         if (IsRunning)
         {
-            // if (TMData.dEventInfo.FinishRun) FinishRun();
 
             if (TMData.dEventInfo.PlayerStateChange)
             {
@@ -52,9 +51,11 @@ class Speedrun
                     else FinishRun();
                 }
 
-                if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Finished)
-                    FinishRun();
+                // if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Finished)
+                //     FinishRun();
             }
+
+            if (TMData.dEventInfo.FinishRun) FinishRun();
 
             if (g_LiveSplit !is null && g_LiveSplit.connected)
                 LiveSplitUpdateLoop();
@@ -201,8 +202,12 @@ class Speedrun
             g_LiveSplit.split();
         }
 
-        if (TMData.dMapInfo.bIsMultiLap && TMData.dEventInfo.LapChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[2])
-        {
+        if (
+            TMData.dMapInfo.bIsMultiLap &&
+            TMData.dEventInfo.LapChange &&
+            TMData.dPlayerInfo.CurrentLapNumber != 1 && // don't split on first lap (start)
+            PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[2]
+        ) {
             g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + (TMData.dEventInfo.FinishRun ? 0 : TMData.dPlayerInfo.LatestCPTime)));
             g_LiveSplit.split();
         }
@@ -237,7 +242,7 @@ class Speedrun
                 base36DateTime = base36Chars[minutesDateTime % 36] + base36DateTime;
                 minutesDateTime /= 36;
             }
-            logFileCode = PadLeft(base36DateTime, 5, "_");
+            logFileCode = PadLeft(base36DateTime, 5, "");
             logFileName = actualSpeedrunPath + "/" + logFileCode + ".txt";
         }
 

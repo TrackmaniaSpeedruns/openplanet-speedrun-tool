@@ -520,7 +520,7 @@ namespace Speedrun
                 }
             } else if(heldShift && key == VirtualKey::Delete && !g_speedrun.firstMap) {
                 UI::ShowNotification("Restarting speedrun...");
-                print("Press Shift + Delete to reset the speedrun");
+                print("Pressed Shift + Delete to reset the speedrun");
                 RestartSpeedrun();
                 return true;
             }

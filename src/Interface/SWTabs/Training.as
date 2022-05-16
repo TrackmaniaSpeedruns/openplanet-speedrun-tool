@@ -32,5 +32,34 @@ class TrainingSelectSWTab : SWTab
         }
         isSelected = UI::WhiteCheckbox("Select Training Campaign", isSelected);
         if (isSelected) g_SpeedrunWindow.selectedCampaigns.InsertLast(TrainingCampaignSummary);
+
+        // Check if the campaign is favorited
+        bool isFav = false;
+        int favIndex = -1;
+        for (uint f = 0; f < DataJson["favoriteCampaigns"].Length; f++)
+        {
+            CampaignSummary@ favorite = CampaignSummary(DataJson["favoriteCampaigns"][f]);
+            if (favorite.id == TrainingCampaignSummary.id)
+            {
+                isFav = true;
+                favIndex = f;
+                break;
+            }
+        }
+        if (isFav) {
+            UI::Text("\\$f00" + Icons::Heart);
+            UI::SetPreviousTooltip("Campaign added to favorites. Click to remove from favorites");
+            if (UI::IsItemClicked()) {
+                DataJson["favoriteCampaigns"].Remove(favIndex);
+                DataManager::Save();
+            }
+        } else {
+            UI::TextDisabled(Icons::HeartO);
+            UI::SetPreviousTooltip("Campaign is not in favorites. Click to add to favorites");
+            if (UI::IsItemClicked()) {
+                DataJson["favoriteCampaigns"].Add(campaign.ToJson());
+                DataManager::Save();
+            }
+        }
     }
 }

@@ -59,7 +59,9 @@ class SpeedrunWindow
 
                 if (tab.CanClose()){
                     bool open = true;
-                    if(UI::BeginTabItem(tab.GetLabel(), open, flags)){
+                    bool beginTabClosable = UI::BeginTabItem(tab.GetLabel().Trim(), open, flags);
+                    if (tab.GetTooltip().Length > 0) UI::SetPreviousTooltip(tab.GetTooltip());
+                    if(beginTabClosable){
                         @c_lastActiveTab = tab;
 
                         UI::BeginChild("Tab");
@@ -72,7 +74,9 @@ class SpeedrunWindow
                         tabs.RemoveAt(i--);
                     }
                 } else {
-                    if(UI::BeginTabItem(tab.GetLabel(), flags)){
+                    bool beginTab = UI::BeginTabItem(tab.GetLabel().Trim(), flags);
+                    if (tab.GetTooltip().Length > 0) UI::SetPreviousTooltip(tab.GetTooltip());
+                    if(beginTab){
                         @c_lastActiveTab = tab;
 
                         UI::BeginChild("Tab");
@@ -82,7 +86,6 @@ class SpeedrunWindow
                         UI::EndTabItem();
                     }
                 }
-                if (tab.GetTooltip().Length > 0) UI::SetPreviousTooltip(tab.GetTooltip());
 
                 tab.PopTabStyle();
 

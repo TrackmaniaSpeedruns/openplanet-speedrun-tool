@@ -152,6 +152,13 @@ class SpeedrunStatusTab : SWTab
                 {
                     Renderables::Add(SavePlaylistModalDialog());
                 }
+                UI::SameLine();
+                UI::TextDisabled(Icons::Trash);
+                UI::SetPreviousTooltip("Clear playlist");
+                if (UI::IsItemClicked())
+                {
+                    g_SpeedrunWindow.selectedCampaigns.RemoveRange(0, g_SpeedrunWindow.selectedCampaigns.Length);
+                }
             }
         }
 

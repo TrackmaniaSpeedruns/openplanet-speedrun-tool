@@ -35,11 +35,11 @@ class FavoritesSWTab : SWTab
                 }
                 UI::SetPreviousTooltip("Delete from favorites");
                 UI::SameLine();
-                UI::Text(ColoredString(campaign.name));
-                UI::SameLine();
                 isSelected = UI::WhiteCheckbox("###SelectCampaign"+campaign.id, isSelected);
                 UI::SetPreviousTooltip("Add to current campaigns playlist");
                 if (isSelected) g_SpeedrunWindow.selectedCampaigns.InsertLast(campaign);
+                UI::SameLine();
+                UI::Text(ColoredString(campaign.name));
                 UI::PopID();
             }
         }

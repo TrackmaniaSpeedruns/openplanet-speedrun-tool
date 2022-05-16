@@ -30,7 +30,15 @@ class SpeedrunStatusTab : SWTab
     {
         if (g_speedrun.IsRunning)
         {
-            if (UI::CyanButton(Icons::AngleDoubleRight + " Next map"))
+            if (UI::CyanButton(
+                Icons::AngleDoubleRight + " Next map" +
+                (
+                    g_LiveSplit !is null &&
+                    g_LiveSplit.connected &&
+                    !g_speedrun.actualMapCompleted :
+                    (" (" + Icons::ExclamationTriangle +" Skip split)"):""
+                )
+            ))
             {
                 if (g_LiveSplit !is null && g_LiveSplit.connected)
                 {

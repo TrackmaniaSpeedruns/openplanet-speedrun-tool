@@ -34,7 +34,11 @@ class SpeedrunStatusTab : SWTab
             {
                 if (g_LiveSplit !is null && g_LiveSplit.connected)
                 {
-                    if (g_speedrun.actualMapCompleted) g_LiveSplit.split();
+                    if (g_speedrun.actualMapCompleted)
+                    {
+                        g_LiveSplit.setgametime(Speedrun::FormatTimer(g_speedrun.SumCompleteTimeWithRespawns));
+                        g_LiveSplit.split();
+                    }
                     else g_LiveSplit.skipsplit();
                 }
                 startnew(Speedrun::NextMap);

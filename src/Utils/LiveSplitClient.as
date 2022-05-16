@@ -82,6 +82,7 @@ class LiveSplitClient
     {
         if (connected) {
             send("initgametime");
+            send("switchto gametime");
             send("starttimer");
             isTimerPaused = false;
         }
@@ -116,6 +117,13 @@ class LiveSplitClient
     {
         if (connected) {
             send("skipsplit");
+        }
+    }
+
+    void switchToGameTime()
+    {
+        if (connected) {
+            send("switchto gametime");
         }
     }
 }

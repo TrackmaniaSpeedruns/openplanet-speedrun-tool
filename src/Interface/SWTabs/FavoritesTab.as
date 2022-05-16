@@ -16,15 +16,30 @@ class FavoritesSWTab : SWTab
         else {
             for (uint c = 0; c < DataJson["favoriteCampaigns"].Length; c++)
             {
+                bool isSelected = false;
                 CampaignSummary@ campaign = CampaignSummary(DataJson["favoriteCampaigns"][c]);
+                for (uint i = 0; i < g_SpeedrunWindow.selectedCampaigns.Length; i++)
+                {
+                    if (g_SpeedrunWindow.selectedCampaigns[i].id == campaign.id)
+                    {
+                        if (!isSelected) g_SpeedrunWindow.selectedCampaigns.RemoveAt(i);
+                        isSelected = true;
+                        break;
+                    }
+                }
                 UI::PushID("FavCampaign"+c);
                 if (UI::RedButton(Icons::Times))
                 {
                     DataJson["favoriteCampaigns"].Remove(c);
                     DataManager::Save();
                 }
+                UI::SetPreviousTooltip("Delete from favorites");
                 UI::SameLine();
                 UI::Text(ColoredString(campaign.name));
+                UI::SameLine();
+                isSelected = UI::WhiteCheckbox("###SelectCampaign"+campaign.id, isSelected);
+                UI::SetPreviousTooltip("Add to current campaigns playlist");
+                if (isSelected) g_SpeedrunWindow.selectedCampaigns.InsertLast(campaign);
                 UI::PopID();
             }
         }
@@ -49,6 +64,17 @@ class FavoritesSWTab : SWTab
                     DataJson["favoritePlaylists"].Remove(p);
                     DataManager::Save();
                 }
+                UI::SetPreviousTooltip("Delete from favorites");
+                UI::SameLine();
+                if (UI::Button(Icons::Plus)) {
+                    for (uint pc = 0; pc < DataJson["favoritePlaylists"][p]["campaigns"].Length; pc++)
+                    {
+                        CampaignSummary@ campaign = CampaignSummary(DataJson["favoritePlaylists"][p]["campaigns"][pc]);
+                        g_SpeedrunWindow.selectedCampaigns.InsertLast(campaign);
+                    }
+                    UI::ShowNotification(DataJson["favoritePlaylists"][p]["campaigns"].Length + " campaigns added to selection");
+                }
+                UI::SetPreviousTooltip("Add playlist to selection");
                 UI::SameLine();
                 UI::Text(ColoredString(playlistName));
                 UI::SetPreviousTooltip(campaignsName);

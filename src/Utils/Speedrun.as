@@ -30,7 +30,7 @@ class Speedrun
         @TMData = PlayerState::GetRaceData();
         if (IsRunning)
         {
-            if (TMData.dEventInfo.FinishRun) FinishRun();
+            // if (TMData.dEventInfo.FinishRun) FinishRun();
 
             if (TMData.dEventInfo.PlayerStateChange)
             {

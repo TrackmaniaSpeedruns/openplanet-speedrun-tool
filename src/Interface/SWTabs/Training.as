@@ -33,6 +33,7 @@ class TrainingSelectSWTab : SWTab
         isSelected = UI::WhiteCheckbox("Select Training Campaign", isSelected);
         if (isSelected) g_SpeedrunWindow.selectedCampaigns.InsertLast(TrainingCampaignSummary);
 
+        UI::SameLine();
         // Check if the campaign is favorited
         bool isFav = false;
         int favIndex = -1;

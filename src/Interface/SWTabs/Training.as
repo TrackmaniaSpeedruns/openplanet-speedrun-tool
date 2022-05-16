@@ -57,7 +57,7 @@ class TrainingSelectSWTab : SWTab
             UI::TextDisabled(Icons::HeartO);
             UI::SetPreviousTooltip("Campaign is not in favorites. Click to add to favorites");
             if (UI::IsItemClicked()) {
-                DataJson["favoriteCampaigns"].Add(campaign.ToJson());
+                DataJson["favoriteCampaigns"].Add(TrainingCampaignSummary.ToJson());
                 DataManager::Save();
             }
         }

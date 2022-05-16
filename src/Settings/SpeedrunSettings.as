@@ -18,9 +18,6 @@ namespace PluginSettings
     [Setting hidden]
     string SwitcherNextMapOnMedal = Speedrun::Medals[0];
 
-    [Setting hidden]
-    bool LiveSplitStartTimerOnSpawn = true;
-
     array<string> LiveSplitSplitOnSettings = {
         "Finish",
         "Checkpoint",
@@ -41,9 +38,6 @@ namespace PluginSettings
         UI::SetPreviousTooltip("You can find your log files in " + IO::FromUserGameFolder("Speedruns"));
 
         CreateReplayOnFinishMap = UI::WhiteCheckbox("Create replays", CreateReplayOnFinishMap);
-
-        if (g_LiveSplit !is null && g_LiveSplit.connected)
-            LiveSplitStartTimerOnSpawn = UI::WhiteCheckbox("Start timer after 3,2,1 countdown", LiveSplitStartTimerOnSpawn);
 
         if ((g_LiveSplit !is null && g_LiveSplit.connected) || SwitcherAutoloadNextMap)
         {

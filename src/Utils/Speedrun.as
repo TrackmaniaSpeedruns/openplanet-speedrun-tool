@@ -133,12 +133,9 @@ class Speedrun
             {
                 if (g_speedrun.firstMap)
                 {
-                    if (PluginSettings::LiveSplitStartTimerOnSpawn)
-                    {
-                        g_LiveSplit.StartTimer();
-                        g_LiveSplit.setgametime("0");
-                        g_LiveSplit.resume();
-                    }
+                    g_LiveSplit.StartTimer();
+                    g_LiveSplit.setgametime("0");
+                    g_LiveSplit.resume();
                 }
                 else
                     g_LiveSplit.resume();

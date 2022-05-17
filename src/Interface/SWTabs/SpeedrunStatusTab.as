@@ -65,6 +65,8 @@ class SpeedrunStatusTab : SWTab
                 if (g_LiveSplit !is null && g_LiveSplit.connected)
                     g_LiveSplit.reset();
                 g_speedrun.IsRunning = false;
+                if (PluginSettings::WriteSpeedrunLog)
+                    g_speedrun.EndOfFileLog(true);
             }
             UI::SameLine();
             if (UI::OrangeButton(Icons::Refresh + " Restart speedrun"+

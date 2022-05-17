@@ -94,7 +94,6 @@ class LiveSplitClient
         }
 
         trace("Connected to LiveSplit server in "+connexionAttemptDelay+" gameticks.");
-        send("initgametime");
         connected = true;
 
     }
@@ -141,7 +140,6 @@ class LiveSplitClient
     void StartTimer()
     {
         if (connected) {
-            send("initgametime");
             send("switchto gametime");
             send("starttimer");
             isTimerPaused = false;
@@ -185,5 +183,31 @@ class LiveSplitClient
         if (connected) {
             send("switchto gametime");
         }
+    }
+
+    string getCategoryNameAsync()
+    {
+        if (connected) {
+            lastResult = "";
+            send("getcategoryname");
+            while (lastResult == "") {
+                yield();
+            }
+            return lastResult;
+        }
+        return "";
+    }
+
+    string getGameNameAsync()
+    {
+        if (connected) {
+            lastResult = "";
+            send("getgamename");
+            while (lastResult == "") {
+                yield();
+            }
+            return lastResult;
+        }
+        return "";
     }
 }

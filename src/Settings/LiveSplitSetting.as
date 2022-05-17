@@ -69,6 +69,8 @@ namespace PluginSettings
             LiveSplitFirstSetupDone = UI::WhiteCheckbox("Wizard done", LiveSplitFirstSetupDone);
             LiveSplitAppPath = UI::InputText("LiveSplit path", LiveSplitAppPath);
             UI::SetPreviousTooltip("The path where LiveSplit is installed. This is used for automatic component updates.");
+            if (IS_DEV_MODE) LiveSplitServerVersion = UI::InputText("LiveSplit server version", LiveSplitServerVersion);
+            else UI::Text("LiveSplit server version: "+LiveSplitServerVersion);
             UI::EndTabItem();
         }
         UI::EndTabBar();

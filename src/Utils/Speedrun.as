@@ -225,7 +225,10 @@ class Speedrun
     {
         string speedrunPath = IO::FromUserGameFolder("Speedruns");
         if (!IO::FolderExists(speedrunPath)) IO::CreateFolder(speedrunPath);
-        actualSpeedrunPath = speedrunPath + "/" + Time::FormatString("%F_%H-%M-%S");
+        if (g_LiveSplit !is null && g_LiveSplit.connected) {
+            string categoryName = g_LiveSplit.getCategoryNameAsync();
+            actualSpeedrunPath = speedrunPath + "/" + Time::FormatString("%F_%H-%M-%S") + " - " + categoryName;
+        } else actualSpeedrunPath = speedrunPath + "/" + Time::FormatString("%F_%H-%M-%S");
         if (!IO::FolderExists(actualSpeedrunPath)) IO::CreateFolder(actualSpeedrunPath);
     }
 
@@ -242,14 +245,18 @@ class Speedrun
                 base36DateTime = base36Chars[minutesDateTime % 36] + base36DateTime;
                 minutesDateTime /= 36;
             }
-            logFileCode = PadLeft(base36DateTime, 5, "");
+            logFileCode = base36DateTime;
             logFileName = actualSpeedrunPath + "/" + logFileCode + ".txt";
         }
 
         IO::File file(logFileName);
         file.Open(IO::FileMode::Append);
         if (!newFile) file.WriteLine();
-        file.WriteLine("Trackmania - " + StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T") + " - Speedrun plugin version " + Meta::ExecutingPlugin().Version);
+        string gameName = "Trackmania";
+        if (g_LiveSplit !is null && g_LiveSplit.connected) gameName = g_LiveSplit.getGameNameAsync();
+        string liveSplitServerVersion = "";
+        if (g_LiveSplit !is null && g_LiveSplit.connected) liveSplitServerVersion = " - LiveSplit Server version " + PluginSettings::LiveSplitServerVersion;
+        file.WriteLine(gameName + " - " + StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T") + " - Speedrun plugin version " + Meta::ExecutingPlugin().Version + liveSplitServerVersion);
         file.WriteLine();
         file.WriteLine("Sum | Segment | Track");
 	    file.Close();
@@ -266,14 +273,15 @@ class Speedrun
 	    file.Close();
     }
 
-    void EndOfFileLog()
+    void EndOfFileLog(bool isCanceled = false)
     {
         IO::File file(logFileName);
         file.Open(IO::FileMode::Append);
         file.WriteLine();
-        file.WriteLine("End of speedrun at " + Time::FormatString("%F %T"));
+        if (isCanceled) file.WriteLine("Speedrun canceled at " + Time::FormatString("%F %T"));
+        else file.WriteLine("End of speedrun at " + Time::FormatString("%F %T"));
 	    file.Close();
-        IO::Move(logFileName, actualSpeedrunPath + "/" + logFileCode+"_"+Speedrun::FormatTimer(SumCompleteTimeWithRespawns).Replace(":", ".") + ".txt");
+    IO::Move(logFileName, actualSpeedrunPath + "/" + (isCanceled?"CANCELED_":"") + logFileCode+"_"+Speedrun::FormatTimer(SumCompleteTimeWithRespawns).Replace(":", ".") + ".txt");
     }
 
     void CreateReplay()
@@ -405,6 +413,8 @@ namespace Speedrun
         g_speedrun.SumCompleteTimeWithRespawns = 0;
         g_speedrun.resetCounter = 0;
         g_speedrun.logInitialized = false;
+        if (PluginSettings::WriteSpeedrunLog)
+            g_speedrun.EndOfFileLog(true);
 
         // remove all maps from queue
         g_speedrun.mapPlaylist.RemoveRange(0, g_speedrun.mapPlaylist.Length);

@@ -13,7 +13,6 @@ void Main()
     @g_LiveSplitDevWindow = LiveSplitDevWindow();
     if (PluginSettings::LiveSplitClientEnabled)
     {
-        if (!PluginSettings::LiveSplitFirstSetupDone) Renderables::Add(LiveSplitWizard());
         @g_LiveSplit = LiveSplitClient();
         startnew(waitForLiveSplitData);
     }

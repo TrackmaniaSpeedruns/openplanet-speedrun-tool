@@ -2,6 +2,8 @@ class LiveSplitWizard : ModalDialog
 {
     Resources::Font@ m_header;
     Net::HttpRequest@ m_dllComponentRequest;
+    Net::HttpRequest@ m_releasesRequest;
+    string dllDownloadUrl;
     bool isFoldersChecked = false;
     bool folderCheckInProgress = false;
     bool folderCheckError = false;
@@ -50,10 +52,25 @@ class LiveSplitWizard : ModalDialog
         folderCheckInProgress = false;
     }
 
+    void StartReleasesRequest()
+    {
+        @m_releasesRequest = API::Get("https://api.github.com/repos/GreepTheSheep/LiveSplit.Server/releases/latest");
+    }
+
+    void CheckReleasesRequest()
+    {
+        // If there's a request, check if it has finished
+        if (m_releasesRequest !is null && m_releasesRequest.Finished()) {
+            Json::Value json = Json::Parse(m_releasesRequest.String());
+            dllDownloadUrl = json["assets"][0]["browser_download_url"];
+            PluginSettings::LiveSplitServerVersion = json["tag_name"];
+            @m_releasesRequest = null;
+        }
+    }
+
     void StartServerComponentRequest()
     {
-        string url = "https://github.com/GreepTheSheep/LiveSplit.Server/releases/download/1.8.19-custom/LiveSplit.Server.dll";
-        @m_dllComponentRequest = API::Get(url);
+        @m_dllComponentRequest = API::Get(dllDownloadUrl);
     }
 
     void CheckServerComponentRequest()
@@ -102,12 +119,15 @@ class LiveSplitWizard : ModalDialog
             }
         } else
         {
+            if (dllDownloadUrl.Length == 0) CheckReleasesRequest();
+            if (m_releasesRequest is null && dllDownloadUrl.Length == 0) StartReleasesRequest();
+
             if (!isDllDownloaded) CheckServerComponentRequest();
-            if (m_dllComponentRequest is null && !isDllDownloaded) StartServerComponentRequest();
+            if (m_dllComponentRequest is null && !isDllDownloaded && dllDownloadUrl.Length > 0) StartServerComponentRequest();
 
             if (isDllDownloaded)
             {
-                UI::Text("\\$0f0" +Icons::Check+ " \\$zLiveSplit Server has been installed.");
+                UI::Text("\\$0f0" +Icons::Check+ " \\$zLiveSplit Server has been installed. (version "+PluginSettings::LiveSplitServerVersion+")");
                 UI::Text("You can now restart LiveSplit and use the plugin!");
             } else
             {
@@ -148,8 +168,11 @@ class LiveSplitWizard : ModalDialog
         } else {
             if (UI::GreenButton(Icons::Check + "Finish")) {
                 PluginSettings::LiveSplitFirstSetupDone = true;
+                startnew(connectToLiveSplit);
                 Close();
             }
         }
     }
 }
+
+void connectToLiveSplit() {g_LiveSplit.connect();}

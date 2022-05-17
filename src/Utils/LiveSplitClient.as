@@ -7,10 +7,70 @@ class LiveSplitClient
     int connexionAttemptDelay = 0;
     int connexionAttemptDelayMax = 200;
     bool isTimerPaused = false;
+    string LiveSplitServerDownloadUrlIfUpdate;
+    string LiveSplitServerVersionIfUpdate;
 
     LiveSplitClient()
     {
-        connect();
+        if (!PluginSettings::LiveSplitFirstSetupDone) Renderables::Add(LiveSplitWizard());
+        else {
+            CheckForUpdateVoid();
+            connect();
+        }
+    }
+
+    void CheckForUpdateVoid()
+    {
+        if (PathIsValid()) {
+            // Check for LiveSplit server updates
+            if (checkForVersionUpdateAsync()) {
+                // Got an update!
+                print("LiveSplit server update available: " + LiveSplitServerVersionIfUpdate + ", installing...");
+                InstallUpdate();
+            } else trace("LiveSplit Server is up to date.");
+        } else {
+            warn("LiveSplit path is invalid! Check your settings.");
+            UI::ShowNotification(Icons::ClockO+" Speedrun", "LiveSplit path is invalid! Check your settings\nOpenplanet>Settings>Speedrun>LiveSplit>Misc", vec4(1,0.7,0,1));
+        }
+    }
+
+    bool PathIsValid()
+    {
+        if (PluginSettings::LiveSplitAppPath.Length == 0)
+            return false;
+        if (!IO::FolderExists(PluginSettings::LiveSplitAppPath))
+            return false;
+        if (!IO::FileExists(PluginSettings::LiveSplitAppPath+"\\LiveSplit.exe"))
+            return false;
+        if (!IO::FolderExists(PluginSettings::LiveSplitAppPath+"\\Components"))
+            return false;
+        if (!IO::FileExists(PluginSettings::LiveSplitAppPath+"\\Components\\LiveSplit.Server.dll"))
+            return false;
+
+        return true;
+    }
+
+    bool checkForVersionUpdateAsync()
+    {
+        Json::Value githubReleasesJson = API::GetAsync("https://api.github.com/repos/GreepTheSheep/LiveSplit.Server/releases/latest");
+        LiveSplitServerVersionIfUpdate = githubReleasesJson["tag_name"];
+        if (PluginSettings::LiveSplitServerVersion != LiveSplitServerVersionIfUpdate) {
+            LiveSplitServerVersionIfUpdate = githubReleasesJson["tag_name"];
+            LiveSplitServerDownloadUrlIfUpdate = githubReleasesJson["assets"][0]["browser_download_url"];
+            return true;
+        } else return false;
+    }
+
+    void InstallUpdate()
+    {
+        Net::HttpRequest@ dllDownloadRequest = API::Get(LiveSplitServerDownloadUrlIfUpdate);
+        while (!dllDownloadRequest.Finished()) {
+            yield();
+        }
+        dllDownloadRequest.SaveToFile(PluginSettings::LiveSplitAppPath+"\\Components\\LiveSplit.Server.dll");
+        print("LiveSplit server update installed.");
+        PluginSettings::LiveSplitServerVersion = LiveSplitServerVersionIfUpdate;
+        UI::ShowNotification(Icons::ClockO+" Speedrun", "LiveSplit Server updated to version " + LiveSplitServerVersionIfUpdate + ".\nPlease restart LiveSplit.", vec4(0.1, 1, 0.1, 0));
     }
 
     void connect()

@@ -8,6 +8,9 @@ namespace PluginSettings
     string LiveSplitAppPath = "";
 
     [Setting hidden]
+    string LiveSplitServerVersion = "";
+
+    [Setting hidden]
     bool LiveSplitClientEnabled = true;
 
     [Setting hidden]
@@ -65,6 +68,7 @@ namespace PluginSettings
         {
             LiveSplitFirstSetupDone = UI::WhiteCheckbox("Wizard done", LiveSplitFirstSetupDone);
             LiveSplitAppPath = UI::InputText("LiveSplit path", LiveSplitAppPath);
+            UI::SetPreviousTooltip("The path where LiveSplit is installed. This is used for automatic component updates.");
             UI::EndTabItem();
         }
         UI::EndTabBar();

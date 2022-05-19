@@ -205,7 +205,7 @@ class Speedrun
         if (
             TMData.dMapInfo.bIsMultiLap &&
             TMData.dEventInfo.LapChange &&
-            TMData.dPlayerInfo.CurrentLapNumber != 1 && // don't split on first lap (start)
+            TMData.dPlayerInfo.CurrentLapNumber != 0 && // don't split on first lap (start)
             PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[2]
         ) {
             g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + (TMData.dEventInfo.FinishRun ? 0 : TMData.dPlayerInfo.LatestCPTime)));

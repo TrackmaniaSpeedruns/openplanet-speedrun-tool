@@ -334,7 +334,7 @@ namespace Speedrun
     {
         g_speedrun.IsRunning = true;
         g_speedrun.firstMap = true;
-
+        g_speedrun.resetCounter = 0;
 
         CampaignSummary@ campaign = g_SpeedrunWindow.selectedCampaigns[0];
         g_speedrun.currentCampaignType = campaign.type;
@@ -364,6 +364,7 @@ namespace Speedrun
     {
         g_speedrun.firstMap = false;
         g_speedrun.actualMapCompleted = false;
+        g_speedrun.resetCounter = 0;
         if (g_speedrun.mapPlaylist.Length > 0)
         {
             ClosePauseMenu();

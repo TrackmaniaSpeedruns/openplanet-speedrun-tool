@@ -16,6 +16,26 @@ namespace DataManager
         if (isJsonUpdated()) return;
         trace("Saving JSON file");
         Json::ToFile(DATA_JSON_LOCATION, DataJson);
+
+        // create json signature
+        string jsonHash = Json::Write(DataJson);
+        jsonHash = Hash::Sha256(jsonHash);
+        IO::File file(DATA_JSON_SIG_LOCATION);
+        file.Open(IO::FileMode::Write);
+        file.WriteLine(jsonHash);
+        file.Close();
+    }
+
+    bool compareJsonSignature()
+    {
+        IO::File file(DATA_JSON_SIG_LOCATION);
+        file.Open(IO::FileMode::Read);
+        string baseSign = file.ReadLine();
+        file.Close();
+
+        string jsonHash = Hash::Sha256(Json::Write(DataJson));
+
+        return baseSign == jsonHash;
     }
 
     bool isJsonUpdated()

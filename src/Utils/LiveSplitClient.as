@@ -44,7 +44,7 @@ class LiveSplitClient
             return false;
         if (!IO::FolderExists(PluginSettings::LiveSplitAppPath+"\\Components"))
             return false;
-        if (!IO::FileExists(PluginSettings::LiveSplitAppPath+"\\Components\\LiveSplit.Server.dll"))
+        if (!IO::FileExists(PluginSettings::LiveSplitAppPath+"\\Components\\LiveSplit.TMServer.dll"))
             return false;
 
         return true;
@@ -52,7 +52,7 @@ class LiveSplitClient
 
     bool checkForVersionUpdateAsync()
     {
-        Json::Value githubReleasesJson = API::GetAsync("https://api.github.com/repos/GreepTheSheep/LiveSplit.Server/releases/latest");
+        Json::Value githubReleasesJson = API::GetAsync("https://api.github.com/repos/GreepTheSheep/LiveSplit.TMServer/releases/latest");
         LiveSplitServerVersionIfUpdate = githubReleasesJson["tag_name"];
         if (PluginSettings::LiveSplitServerVersion != LiveSplitServerVersionIfUpdate) {
             LiveSplitServerVersionIfUpdate = githubReleasesJson["tag_name"];
@@ -67,7 +67,7 @@ class LiveSplitClient
         while (!dllDownloadRequest.Finished()) {
             yield();
         }
-        dllDownloadRequest.SaveToFile(PluginSettings::LiveSplitAppPath+"\\Components\\LiveSplit.Server.dll");
+        dllDownloadRequest.SaveToFile(PluginSettings::LiveSplitAppPath+"\\Components\\LiveSplit.TMServer.dll");
         print("LiveSplit server update installed.");
         PluginSettings::LiveSplitServerVersion = LiveSplitServerVersionIfUpdate;
         UI::ShowNotification(Icons::ClockO+" Speedrun", "LiveSplit Server updated to version " + LiveSplitServerVersionIfUpdate + ".\nPlease restart LiveSplit.", vec4(0.1, 1, 0.1, 0));

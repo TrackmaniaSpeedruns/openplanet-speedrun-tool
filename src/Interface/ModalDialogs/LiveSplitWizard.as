@@ -54,7 +54,7 @@ class LiveSplitWizard : ModalDialog
 
     void StartReleasesRequest()
     {
-        @m_releasesRequest = API::Get("https://api.github.com/repos/GreepTheSheep/LiveSplit.Server/releases/latest");
+        @m_releasesRequest = API::Get("https://api.github.com/repos/GreepTheSheep/LiveSplit.TMServer/releases/latest");
     }
 
     void CheckReleasesRequest()
@@ -77,7 +77,7 @@ class LiveSplitWizard : ModalDialog
     {
         // If there's a request, check if it has finished
         if (m_dllComponentRequest !is null && m_dllComponentRequest.Finished()) {
-            m_dllComponentRequest.SaveToFile(PluginSettings::LiveSplitAppPath+"\\Components\\LiveSplit.Server.dll");
+            m_dllComponentRequest.SaveToFile(PluginSettings::LiveSplitAppPath+"\\Components\\LiveSplit.TMServer.dll");
             isDllDownloaded = true;
             @m_dllComponentRequest = null;
         }

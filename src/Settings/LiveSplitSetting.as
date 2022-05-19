@@ -10,7 +10,7 @@ namespace PluginSettings
     string LiveSplitHost = "localhost";
 
     [Setting hidden]
-    int LiveSplitPort = 16834;
+    int LiveSplitPort = 16934;
 
     [SettingsTab name="LiveSplit"]
     void RenderLiveSplitSettings()

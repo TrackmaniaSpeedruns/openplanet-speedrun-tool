@@ -81,25 +81,16 @@ class FavoritesSWTab : SWTab
                         !Permissions::PlayPastOfficialQuarterlyCampaign() &&
                         favCampaign.type == Campaigns::campaignType::Season &&
                         favCampaign.id != campaigns[0].id  // Check if the ID is not the first on the campaign list from tmio (another season)
-                    ) {
-                        DataJson["favoriteCampaigns"].Remove(c);
-                        DataManager::Save();
-                    }
+                    ) DataJson["favoriteCampaigns"].Remove(c);
                     if (
                         !Permissions::PlayCurrentOfficialQuarterlyCampaign() &&
                         favCampaign.type == Campaigns::campaignType::Season &&
                         favCampaign.id == campaigns[0].id  // Check if the ID is the first on the campaign list from tmio (current season)
-                    ) {
-                        DataJson["favoriteCampaigns"].Remove(c);
-                        DataManager::Save();
-                    }
+                    ) DataJson["favoriteCampaigns"].Remove(c);
                     if (
                         !Permissions::PlayPublicClubCampaign() &&
                         favCampaign.type == Campaigns::campaignType::Club
-                    ) {
-                        DataJson["favoriteCampaigns"].Remove(c);
-                        DataManager::Save();
-                    }
+                    ) DataJson["favoriteCampaigns"].Remove(c);
 
                     if (favCampaign.type == Campaigns::campaignType::TOTD) {
                         int current_month = Text::ParseInt(Time::FormatString("%m"));
@@ -108,16 +99,10 @@ class FavoritesSWTab : SWTab
                         current_month--;
                         for(int i = diff; i > 0; i--) {
                             if (i == diff && !Permissions::PlayCurrentOfficialMonthlyCampaign())
-                            {
                                 DataJson["favoriteCampaigns"].Remove(c);
-                                DataManager::Save();
-                            }
 
                             if (i != diff && !Permissions::PlayPastOfficialMonthlyCampaign())
-                            {
                                 DataJson["favoriteCampaigns"].Remove(c);
-                                DataManager::Save();
-                            }
                         }
                     }
 
@@ -178,25 +163,16 @@ class FavoritesSWTab : SWTab
                                 !Permissions::PlayPastOfficialQuarterlyCampaign() &&
                                 favPlaylistCampaign.type == Campaigns::campaignType::Season &&
                                 favPlaylistCampaign.id != campaigns[0].id  // Check if the ID is not the first on the campaign list from tmio (another season)
-                            ) {
-                                DataJson["favoritePlaylists"][p]["campaigns"].Remove(pc);
-                                DataManager::Save();
-                            }
+                            ) DataJson["favoritePlaylists"][p]["campaigns"].Remove(pc);
                             if (
                                 !Permissions::PlayCurrentOfficialQuarterlyCampaign() &&
                                 favPlaylistCampaign.type == Campaigns::campaignType::Season &&
                                 favPlaylistCampaign.id == campaigns[0].id  // Check if the ID is the first on the campaign list from tmio (current season)
-                            ) {
-                                DataJson["favoritePlaylists"][p]["campaigns"].Remove(pc);
-                                DataManager::Save();
-                            }
+                            ) DataJson["favoritePlaylists"][p]["campaigns"].Remove(pc);
                             if (
                                 !Permissions::PlayPublicClubCampaign() &&
                                 favPlaylistCampaign.type == Campaigns::campaignType::Club
-                            ) {
-                                DataJson["favoritePlaylists"][p]["campaigns"].Remove(pc);
-                                DataManager::Save();
-                            }
+                            ) DataJson["favoritePlaylists"][p]["campaigns"].Remove(pc);
 
                             if (favPlaylistCampaign.type == Campaigns::campaignType::TOTD) {
                                 int current_month = Text::ParseInt(Time::FormatString("%m"));
@@ -205,16 +181,10 @@ class FavoritesSWTab : SWTab
                                 current_month--;
                                 for(int i = diff; i > 0; i--) {
                                     if (i == diff && !Permissions::PlayCurrentOfficialMonthlyCampaign())
-                                    {
                                         DataJson["favoritePlaylists"][p]["campaigns"].Remove(pc);
-                                        DataManager::Save();
-                                    }
 
                                     if (i != diff && !Permissions::PlayPastOfficialMonthlyCampaign())
-                                    {
                                         DataJson["favoritePlaylists"][p]["campaigns"].Remove(pc);
-                                        DataManager::Save();
-                                    }
                                 }
                             }
 

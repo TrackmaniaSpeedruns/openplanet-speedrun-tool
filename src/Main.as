@@ -8,14 +8,6 @@ void Main()
     if (DataJson.GetType() != Json::Type::Object)
         DataManager::Init();
 
-    if (!DataManager::compareJsonSignature())
-    {
-        // JSON is wrong, reset it
-        DataManager::Init();
-        UI::ShowNotification(Icons::Times + "Speedrun: Invalid JSON signature", "It seems you edited the data file manually, resetting to default", vec4(1, 0, 0, 1));
-        error("Invalid JSON signature, resetting to default");
-    }
-
     @g_speedrun = Speedrun();
     @g_SpeedrunWindow = SpeedrunWindow();
     @g_LiveSplitDevWindow = LiveSplitDevWindow();

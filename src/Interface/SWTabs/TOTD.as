@@ -33,7 +33,6 @@ class TOTDSelectSWTab : SWTab
     void GetTOTDList() {
         int current_month = Text::ParseInt(Time::FormatString("%m"));
         int current_year = Text::ParseInt(Time::FormatString("%Y"));
-        bool first_entry = true;
 
         auto diff = current_month - 7 + (12 * (current_year - 2020));
         int64 current_epoch = Time::get_Stamp() - (Text::ParseInt(Time::FormatString("%d"))*86400);

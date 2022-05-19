@@ -1,12 +1,5 @@
 namespace PluginSettings
 {
-
-    [Setting hidden]
-    bool LiveSplitFirstSetupDone = false;
-
-    [Setting hidden]
-    string LiveSplitAppPath = "";
-
     [Setting hidden]
     string LiveSplitServerVersion = "";
 
@@ -28,8 +21,14 @@ namespace PluginSettings
         UI::SameLine();
         if (g_LiveSplit !is null)
         {
-            if (g_LiveSplit.connected) UI::Text("\\$0f0"+Icons::Check + " \\$zConnected");
-            else {
+            if (g_LiveSplit.connected) {
+                UI::Text("\\$0f0"+Icons::Check + " \\$zConnected");
+                if (IS_DEV_MODE) LiveSplitServerVersion = UI::InputText("LiveSplit server version", LiveSplitServerVersion);
+                else {
+                    UI::Text("LiveSplit server version: "+LiveSplitServerVersion);
+                    UI::SetPreviousTooltip("LiveSplit server updates are automatically downloaded within the LiveSplit application.");
+                }
+            } else {
                 if (g_LiveSplit.connectTimeout) UI::Text("\\$f00"+Icons::Times + " \\$zCannot connect - Timeout");
                 else UI::Text(Icons::Refresh + " Connecting...");
             }
@@ -40,40 +39,24 @@ namespace PluginSettings
         }
         UI::Separator();
 
-        // create tabs
-        UI::BeginTabBar("LiveSplitSettingsCategoryTabBar", UI::TabBarFlags::FittingPolicyResizeDown);
-        if (UI::BeginTabItem(Icons::Kenney::Network + " Connexion Settings"))
+        if (UI::OrangeButton("Reset to default"))
         {
-            if (UI::OrangeButton("Reset to default"))
-            {
-                LiveSplitHost = "localhost";
-                LiveSplitPort = 16834;
-            }
-            if (LiveSplitClientEnabled)
-            {
-                UI::SameLine();
-                if (UI::Button(Icons::Refresh + " Restart client")) startnew(RestartLiveSplitClient);
-            }
-
-            LiveSplitClientEnabled = UI::WhiteCheckbox("Enable LiveSplit client", LiveSplitClientEnabled);
-
-            if (LiveSplitClientEnabled)
-            {
-                LiveSplitHost = UI::InputText("IP address / hostname", LiveSplitHost);
-                LiveSplitPort = UI::InputInt("Port", LiveSplitPort);
-            }
-            UI::EndTabItem();
+            LiveSplitHost = "localhost";
+            LiveSplitPort = 16934;
         }
-        if (UI::BeginTabItem(Icons::Check + " Misc"))
+        if (LiveSplitClientEnabled)
         {
-            LiveSplitFirstSetupDone = UI::WhiteCheckbox("Wizard done", LiveSplitFirstSetupDone);
-            LiveSplitAppPath = UI::InputText("LiveSplit path", LiveSplitAppPath);
-            UI::SetPreviousTooltip("The path where LiveSplit is installed. This is used for automatic component updates.");
-            if (IS_DEV_MODE) LiveSplitServerVersion = UI::InputText("LiveSplit server version", LiveSplitServerVersion);
-            else UI::Text("LiveSplit server version: "+LiveSplitServerVersion);
-            UI::EndTabItem();
+            UI::SameLine();
+            if (UI::Button(Icons::Refresh + " Restart client")) startnew(RestartLiveSplitClient);
         }
-        UI::EndTabBar();
+
+        LiveSplitClientEnabled = UI::WhiteCheckbox("Enable LiveSplit client", LiveSplitClientEnabled);
+
+        if (LiveSplitClientEnabled)
+        {
+            LiveSplitHost = UI::InputText("IP address / hostname", LiveSplitHost);
+            LiveSplitPort = UI::InputInt("Port", LiveSplitPort);
+        }
     }
 
     void RestartLiveSplitClient()
@@ -81,5 +64,10 @@ namespace PluginSettings
         LiveSplitClientEnabled = false;
         yield();
         LiveSplitClientEnabled = true;
+    }
+
+    void getServerVersion()
+    {
+        PluginSettings::LiveSplitServerVersion = g_LiveSplit.getServerVersionAsync();
     }
 }

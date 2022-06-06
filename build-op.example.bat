@@ -2,9 +2,13 @@
 
 @echo off
 
-IF EXIST Speedrun.op (
-    del Speedrun.op
-)
 :: Set here your path to 7-Zip, including 7z.exe
 SET zip="C:\Program Files\7-Zip\7z.exe"
-%zip% a -mx1 -tzip Speedrun.op info.toml src
+
+:: This will get the current directory name
+for %%I in (.) do SET CurrDirName=%%~nxI
+
+IF EXIST %CurrDirName%.op (
+    del %CurrDirName%.op
+)
+%zip% a -mx1 -tzip %CurrDirName%.op info.toml src

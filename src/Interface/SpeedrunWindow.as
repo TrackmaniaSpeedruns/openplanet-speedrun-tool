@@ -10,6 +10,7 @@ class SpeedrunWindow
     {
         AddTab(HomeSWTab());
         AddTab(SpeedrunStatusTab());
+        AddTab(IndividualMapTab());
         AddTab(FavoritesSWTab());
         AddTab(TrainingSelectSWTab());
         AddTab(OfficialCampaignsSelectSWTab());

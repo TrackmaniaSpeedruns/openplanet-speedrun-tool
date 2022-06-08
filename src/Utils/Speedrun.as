@@ -30,7 +30,6 @@ class Speedrun
         @TMData = PlayerState::GetRaceData();
         if (IsRunning)
         {
-
             if (TMData.dEventInfo.PlayerStateChange)
             {
                 if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_EndRace)
@@ -50,9 +49,6 @@ class Speedrun
                     }
                     else FinishRun();
                 }
-
-                // if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Finished)
-                //     FinishRun();
             }
 
             if (TMData.dEventInfo.FinishRun) FinishRun();

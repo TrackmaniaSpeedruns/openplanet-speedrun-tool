@@ -33,8 +33,7 @@ namespace PluginSettings
                 else UI::Text(Icons::Refresh + " Connecting...");
             }
         }
-        else
-        {
+        else {
             UI::Text("Disconnected or not initialized");
         }
         UI::Separator();

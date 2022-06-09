@@ -1,6 +1,7 @@
 class Speedrun
 {
     bool IsRunning = false;
+    bool isSingleMap = false;
     bool firstMap = false;
     bool actualMapCompleted = false;
     bool logInitialized = false;
@@ -32,14 +33,17 @@ class Speedrun
         {
             if (TMData.dEventInfo.PlayerStateChange)
             {
+                if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Menus && isSingleMap)
+                {
+                    Speedrun::StopSpeedrunSingleMap();
+                }
                 if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_EndRace)
                 {
                     if (!TMData.dEventInfo.FinishRun)
                     {
                         if (g_speedrun.firstMap)
                             SumCompleteTimeWithRespawns == 0;
-                        else
-                        {
+                        else {
                             MapCompleteTime = TMData.dPlayerInfo.CurrentRaceTime;
                             SumCompleteTimeWithRespawns += TMData.dPlayerInfo.CurrentRaceTime;
                             resetCounter++;
@@ -56,8 +60,7 @@ class Speedrun
             if (g_LiveSplit !is null && g_LiveSplit.connected)
                 LiveSplitUpdateLoop();
         }
-        else
-        {
+        else {
             currentCampaignType = Campaigns::campaignType::Unknown;
             MapCompleteTime = 0;
             SumCompleteTime = 0;
@@ -80,44 +83,43 @@ class Speedrun
         SumCompleteTime += MapCompleteTime;
         SumCompleteTimeWithRespawns += MapCompleteTime;
 
-        if (logInitialized)
-            WriteSpeedrunLog();
+        if (!isSingleMap) {
+            if (logInitialized)
+                WriteSpeedrunLog();
 
-        if (PluginSettings::CreateReplayOnFinishMap)
-            CreateReplay();
+            if (PluginSettings::CreateReplayOnFinishMap)
+                CreateReplay();
 
-        if (PluginSettings::SwitcherNextMapOnMedal != Speedrun::Medals[0])
-        {
-            int author = TMData.dMapInfo.TMObjective_AuthorTime;
-            int gold = TMData.dMapInfo.TMObjective_GoldTime;
-            int silver = TMData.dMapInfo.TMObjective_SilverTime;
-            int bronze = TMData.dMapInfo.TMObjective_BronzeTime;
-            if (
-                (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[4] && MapCompleteTime <= author) ||
-                (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[3] && MapCompleteTime <= gold) ||
-                (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[2] && MapCompleteTime <= silver) ||
-                (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[1] && MapCompleteTime <= bronze)
-            )
+            if (PluginSettings::SwitcherNextMapOnMedal != Speedrun::Medals[0])
             {
-                if (PluginSettings::SwitcherAutoloadNextMap)
-                    startnew(Speedrun::NextMap);
-                else
+                int author = TMData.dMapInfo.TMObjective_AuthorTime;
+                int gold = TMData.dMapInfo.TMObjective_GoldTime;
+                int silver = TMData.dMapInfo.TMObjective_SilverTime;
+                int bronze = TMData.dMapInfo.TMObjective_BronzeTime;
+                if (
+                    (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[4] && MapCompleteTime <= author) ||
+                    (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[3] && MapCompleteTime <= gold) ||
+                    (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[2] && MapCompleteTime <= silver) ||
+                    (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[1] && MapCompleteTime <= bronze)
+                )
                 {
-                    actualMapCompleted = true;
-                    firstMap = false; // don't reset timer
-                    UI::ShowNotification("Map completed", "Use the button 'next map' on the menu to load the next map");
+                    if (PluginSettings::SwitcherAutoloadNextMap)
+                        startnew(Speedrun::NextMap);
+                    else {
+                        actualMapCompleted = true;
+                        firstMap = false; // don't reset timer
+                        UI::ShowNotification("Map completed", "Use the button 'next map' on the menu to load the next map");
+                    }
                 }
             }
-        }
-        else
-        {
-            if (PluginSettings::SwitcherAutoloadNextMap)
-                startnew(Speedrun::NextMap);
-            else
-            {
-                actualMapCompleted = true;
-                firstMap = false;
-                UI::ShowNotification("Map completed", "Use the button 'next map' on the menu to load the next map");
+            else {
+                if (PluginSettings::SwitcherAutoloadNextMap)
+                    startnew(Speedrun::NextMap);
+                else {
+                    actualMapCompleted = true;
+                    firstMap = false;
+                    UI::ShowNotification("Map completed", "Use the button 'next map' on the menu to load the next map");
+                }
             }
         }
     }
@@ -178,15 +180,20 @@ class Speedrun
                         (PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[1] && MapCompleteTime <= bronze)
                     )
                 ) {
-                    g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns));
+                    if (!isSingleMap)
+                        g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns));
+                    else
+                        g_LiveSplit.setgametime(Speedrun::FormatTimer(TMData.dPlayerInfo.LatestCPTime));
                     g_LiveSplit.split();
                 }
             }
-            else
-            {
+            else {
                 if (!actualMapCompleted)
                 {
-                    g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns));
+                    if (!isSingleMap)
+                        g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns));
+                    else
+                        g_LiveSplit.setgametime(Speedrun::FormatTimer(TMData.dPlayerInfo.LatestCPTime));
                     g_LiveSplit.split();
                 }
             }
@@ -194,7 +201,10 @@ class Speedrun
 
         if (TMData.dEventInfo.CheckpointChange && PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[1])
         {
-            g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + (TMData.dEventInfo.FinishRun ? 0 : TMData.dPlayerInfo.LatestCPTime) ));
+            if (!isSingleMap)
+                g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + (TMData.dEventInfo.FinishRun ? 0 : TMData.dPlayerInfo.LatestCPTime) ));
+            else
+                g_LiveSplit.setgametime(Speedrun::FormatTimer(TMData.dPlayerInfo.LatestCPTime));
             g_LiveSplit.split();
         }
 
@@ -204,7 +214,10 @@ class Speedrun
             TMData.dPlayerInfo.CurrentLapNumber != 0 && // don't split on first lap (start)
             PluginSettings::LiveSplitSplitOn == PluginSettings::LiveSplitSplitOnSettings[2]
         ) {
-            g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + (TMData.dEventInfo.FinishRun ? 0 : TMData.dPlayerInfo.LatestCPTime)));
+            if (!isSingleMap)
+                g_LiveSplit.setgametime(Speedrun::FormatTimer(SumCompleteTimeWithRespawns + (TMData.dEventInfo.FinishRun ? 0 : TMData.dPlayerInfo.LatestCPTime) ));
+            else
+                g_LiveSplit.setgametime(Speedrun::FormatTimer(TMData.dPlayerInfo.LatestCPTime));
             g_LiveSplit.split();
         }
 
@@ -329,6 +342,7 @@ namespace Speedrun
     void StartSpeedrun()
     {
         g_speedrun.IsRunning = true;
+        g_speedrun.isSingleMap = false;
         g_speedrun.firstMap = true;
         g_speedrun.resetCounter = 0;
 
@@ -356,6 +370,22 @@ namespace Speedrun
             g_speedrun.InitSpeedrunLog(true);
     }
 
+    void StartSpeedrunSingleMap()
+    {
+        g_speedrun.IsRunning = true;
+        g_speedrun.isSingleMap = true;
+        g_speedrun.firstMap = true;
+        g_speedrun.resetCounter = 0;
+    }
+
+    void StopSpeedrunSingleMap()
+    {
+        g_speedrun.IsRunning = false;
+        g_speedrun.isSingleMap = false;
+        g_speedrun.firstMap = false;
+        g_speedrun.resetCounter = 0;
+    }
+
     void NextMap()
     {
         g_speedrun.firstMap = false;
@@ -375,8 +405,7 @@ namespace Speedrun
             app.ManiaTitleControlScriptAPI.PlayMap(g_speedrun.mapPlaylist[0].file_url, "", "");
             g_speedrun.mapPlaylist.RemoveAt(0);
         }
-        else
-        {
+        else {
             // The playlist is empty, check if we have more campaigns
             if (g_SpeedrunWindow.selectedCampaigns.Length > 0)
             {
@@ -391,8 +420,7 @@ namespace Speedrun
                     g_speedrun.InitSpeedrunLog(false);
                 NextMap();
             }
-            else
-            {
+            else {
                 // The end of the speedrun
                 UI::ShowNotification("Speedrun finished!");
                 if (PluginSettings::WriteSpeedrunLog)
@@ -523,7 +551,7 @@ namespace Speedrun
     bool heldResetComboKey = false;
     bool heldNextMapComboKey = false;
     bool OnKeyPress(bool down, VirtualKey key) {
-        if (g_speedrun.IsRunning)
+        if (g_speedrun.IsRunning && !g_speedrun.isSingleMap)
         {
             if (PluginSettings::KeysResetSpeedrunEnable) {
                 if (PluginSettings::KeysResetSpeedrunUseComboKeys) {

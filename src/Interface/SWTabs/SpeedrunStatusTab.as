@@ -15,8 +15,7 @@ class SpeedrunStatusTab : SWTab
             {
                 isOK = false;
             }
-            else
-            {
+            else {
                 if (!g_LiveSplit.connected)
                 {
                     Renderables::Add(LiveSplitDisconnectWarnModalDialog());
@@ -85,14 +84,12 @@ class SpeedrunStatusTab : SWTab
                 Speedrun::RestartSpeedrun();
             }
         }
-        else
-        {
+        else {
             if (g_SpeedrunWindow.selectedCampaigns.Length == 0)
             {
                 UI::Text("No campaigns selected, please select campaigns in the tabs above");
             }
-            else
-            {
+            else {
                 if (PluginSettings::SwitcherPreloadCache)
                 {
                     if (UI::GreenButton(Icons::Play + " Start preloading cache"))
@@ -101,8 +98,7 @@ class SpeedrunStatusTab : SWTab
                         print("Starting preload cache");
                     }
                 }
-                else
-                {
+                else {
                     if (UI::GreenButton(Icons::Play + " Start speedrun"))
                     {
                         if (!CheckLiveSplit()) return;
@@ -115,8 +111,7 @@ class SpeedrunStatusTab : SWTab
                     UI::SameLine();
                     if (PluginSettings::LiveSplitClientEnabled)
                         UI::Text("\\$f00"+Icons::Times+" \\$zLiveSplit client is not loaded, please wait...");
-                    else
-                    {
+                    else {
                         UI::Text("\\$ff0" + Icons::InfoCircle + " \\$zLiveSplit client is disabled");
                         UI::SameLine();
                         if (UI::CyanButton("Enable LiveSplit"))
@@ -142,8 +137,7 @@ class SpeedrunStatusTab : SWTab
         UI::Columns(2, "ColumsStartTab");
         UI::BeginChild("Campaigns");
         if (g_SpeedrunWindow.selectedCampaigns.Length == 1) UI::Text("Campaign:");
-        else
-        {
+        else {
             if (g_SpeedrunWindow.selectedCampaigns.Length < 1) UI::Text("No campaigns selected");
             else {
                 UI::Text("Campaigns order ("+g_SpeedrunWindow.selectedCampaigns.Length+"):");

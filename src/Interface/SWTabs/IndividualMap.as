@@ -34,12 +34,23 @@ class IndividualMapTab : SWTab
                 }
                 UI::EndCombo();
             }
+            UI::NewLine();
+            if (!g_speedrun.IsRunning) {
+                if (UI::GreenButton(Icons::Play)) {
+                    Speedrun::StartSpeedrunSingleMap();
+                }
+            }
+            else {
+                if (!g_speedrun.isSingleMap)
+                    UI::Text("Please stop the actual speedrun before starting a new one");
+                else {
+                    if (UI::RedButton(Icons::Times)) {
+                        Speedrun::StopSpeedrunSingleMap();
+                    }
+                }
+            }
         } else {
             UI::Text("\\$f00"+Icons::Times+" \\$zLiveSplit is not connected, check details at the right column");
-        }
-        UI::NewLine();
-        if (UI::GreenButton(Icons::Play)) {
-            print("xd");
         }
         UI::EndChild();
         UI::NextColumn();

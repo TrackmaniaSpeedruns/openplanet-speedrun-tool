@@ -30,8 +30,7 @@ class LiveSplitDevWindow
 
                 UI::Text("Command result: " + g_LiveSplit.lastResult);
             }
-            else
-            {
+            else {
                 UI::Text("Not connected to LiveSplit, check logs");
             }
 

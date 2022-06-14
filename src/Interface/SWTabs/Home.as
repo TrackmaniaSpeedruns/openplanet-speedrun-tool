@@ -1,10 +1,10 @@
 class HomeSWTab : SWTab
 {
-    Resources::Font@ t_header;
+    UI::Font@ t_header;
 
     HomeSWTab()
     {
-        @t_header = Resources::GetFont("DroidSans.ttf", 20, -1, -1, true, true, true);
+        @t_header = UI::LoadFont("DroidSans.ttf", 20, -1, -1, true, true, true);
     }
 
     string GetLabel() override { return Icons::Home; }

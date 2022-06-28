@@ -7,8 +7,6 @@ class LiveSplitClient
     int connexionAttemptDelay = 0;
     int connexionAttemptDelayMax = 200;
     bool isTimerPaused = false;
-    string LiveSplitServerDownloadUrlIfUpdate;
-    string LiveSplitServerVersionIfUpdate;
 
     LiveSplitClient()
     {
@@ -36,7 +34,7 @@ class LiveSplitClient
         }
 
         connected = true;
-        startnew(PluginSettings::getServerVersion);
+        startnew(PluginSettings::getLiveSplitVersions);
         trace("Connected to LiveSplit server in "+connexionAttemptDelay+" gameticks.");
     }
 
@@ -53,6 +51,19 @@ class LiveSplitClient
         if (connected) {
             lastResult = "";
             send("getserverversion");
+            while (lastResult == "") {
+                yield();
+            }
+            return lastResult;
+        }
+        return "";
+    }
+
+    string getAppVersionAsync()
+    {
+        if (connected) {
+            lastResult = "";
+            send("getappversion");
             while (lastResult == "") {
                 yield();
             }

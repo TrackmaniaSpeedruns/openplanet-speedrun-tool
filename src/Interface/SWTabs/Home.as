@@ -37,8 +37,15 @@ class HomeSWTab : SWTab
             UI::PopFont();
             UI::Text("Connexion status:");
             UI::SameLine();
-            if (g_LiveSplit.connected) UI::Text("\\$0f0" + Icons::Check + " \\$zConnected \\$777("+PluginSettings::LiveSplitHost+":"+PluginSettings::LiveSplitPort+")");
-            else UI::Text("\\$f00" + Icons::Times + " \\$zDisconnected");
+            if (g_LiveSplit.connected) {
+                UI::Text("\\$0f0" + Icons::Check + " \\$zConnected \\$777("+PluginSettings::LiveSplitHost+":"+PluginSettings::LiveSplitPort+")");
+                if (PluginSettings::LiveSplitAppVersion.Length > 0)
+                    UI::Text("App Version \\$777"+PluginSettings::LiveSplitAppVersion);
+
+                if (PluginSettings::LiveSplitServerVersion.Length > 0) {
+                    UI::Text(Icons::PuzzlePiece + " LiveSplit Server for Trackmania Extension \\$777Version "+PluginSettings::LiveSplitServerVersion);
+                }
+            } else UI::Text("\\$f00" + Icons::Times + " \\$zDisconnected");
 
             if (UI::Button(Icons::Refresh + " Restart client")) startnew(PluginSettings::RestartLiveSplitClient);
 

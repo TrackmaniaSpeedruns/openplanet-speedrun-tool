@@ -1,7 +1,13 @@
 namespace PluginSettings
 {
-    [Setting hidden]
     string LiveSplitServerVersion = "";
+    int[] LiveSplitServerVersionSplit;
+
+    string LiveSplitAppVersion = "";
+    int[] LiveSplitAppVersionSplit;
+
+    [Setting hidden]
+    string LiveSplitAppPath = "";
 
     [Setting hidden]
     bool LiveSplitClientEnabled = true;
@@ -23,8 +29,11 @@ namespace PluginSettings
         {
             if (g_LiveSplit.connected) {
                 UI::Text("\\$0f0"+Icons::Check + " \\$zConnected");
-                if (IS_DEV_MODE) LiveSplitServerVersion = UI::InputText("LiveSplit server version", LiveSplitServerVersion);
-                else {
+
+                if (LiveSplitAppVersion.Length > 0)
+                    UI::Text("LiveSplit app version: "+LiveSplitAppVersion);
+
+                if (LiveSplitServerVersion.Length > 0) {
                     UI::Text("LiveSplit server version: "+LiveSplitServerVersion);
                     UI::SetPreviousTooltip("LiveSplit server updates are automatically downloaded within the LiveSplit application.");
                 }
@@ -42,6 +51,7 @@ namespace PluginSettings
         {
             LiveSplitHost = "localhost";
             LiveSplitPort = 16934;
+            LiveSplitAppPath = "";
         }
         if (LiveSplitClientEnabled)
         {
@@ -56,6 +66,7 @@ namespace PluginSettings
             LiveSplitHost = UI::InputText("IP address / hostname", LiveSplitHost);
             LiveSplitPort = UI::InputInt("Port", LiveSplitPort);
         }
+        LiveSplitAppPath = UI::InputText("LiveSplit App path", LiveSplitAppPath);
     }
 
     void RestartLiveSplitClient()
@@ -65,8 +76,34 @@ namespace PluginSettings
         LiveSplitClientEnabled = true;
     }
 
-    void getServerVersion()
+    void getLiveSplitVersions()
     {
         PluginSettings::LiveSplitServerVersion = g_LiveSplit.getServerVersionAsync();
+
+        // Check if version is at least 1.9.0 to get app version
+        if (PluginSettings::LiveSplitServerVersion.Length > 0)
+        {
+            string[] splitSrvStr = PluginSettings::LiveSplitServerVersion.Split(".");
+
+            for (int i = 0; i < splitSrvStr.Length; i++)
+            {
+                LiveSplitServerVersionSplit.InsertLast(Text::ParseInt(splitSrvStr[i]));
+            }
+
+            if (LiveSplitServerVersionSplit.Length >= 3)
+            {
+                if (LiveSplitServerVersionSplit[0] >= 1 && LiveSplitServerVersionSplit[1] >= 9 && LiveSplitServerVersionSplit[2] >= 0)
+                {
+                    PluginSettings::LiveSplitAppVersion = g_LiveSplit.getAppVersionAsync();
+
+                    string[] splitAppStr = PluginSettings::LiveSplitAppVersion.Split(".");
+
+                    for (int i = 0; i < splitAppStr.Length; i++)
+                    {
+                        LiveSplitAppVersionSplit.InsertLast(Text::ParseInt(splitAppStr[i]));
+                    }
+                }
+            }
+        }
     }
 }

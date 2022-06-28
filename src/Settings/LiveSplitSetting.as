@@ -85,7 +85,7 @@ namespace PluginSettings
         {
             string[] splitSrvStr = PluginSettings::LiveSplitServerVersion.Split(".");
 
-            for (int i = 0; i < splitSrvStr.Length; i++)
+            for (uint i = 0; i < splitSrvStr.Length; i++)
             {
                 LiveSplitServerVersionSplit.InsertLast(Text::ParseInt(splitSrvStr[i]));
             }
@@ -98,7 +98,7 @@ namespace PluginSettings
 
                     string[] splitAppStr = PluginSettings::LiveSplitAppVersion.Split(".");
 
-                    for (int i = 0; i < splitAppStr.Length; i++)
+                    for (uint i = 0; i < splitAppStr.Length; i++)
                     {
                         LiveSplitAppVersionSplit.InsertLast(Text::ParseInt(splitAppStr[i]));
                     }

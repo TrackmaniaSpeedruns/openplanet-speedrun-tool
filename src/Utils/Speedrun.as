@@ -255,7 +255,13 @@ class Speedrun
                 minutesDateTime /= 36;
             }
             logFileCode = base36DateTime;
-            logFileName = actualSpeedrunPath + "/" + logFileCode + ".txt";
+
+            string categoryName = StripFormatCodes(currentCampaign.name);
+            if (g_LiveSplit !is null && g_LiveSplit.connected) {
+                categoryName = g_LiveSplit.getCategoryNameAsync();
+            }
+
+            logFileName = actualSpeedrunPath + "/" + categoryName + "_" + logFileCode + ".txt";
         }
 
         IO::File file(logFileName);
@@ -290,7 +296,11 @@ class Speedrun
         if (isCanceled) file.WriteLine("Speedrun canceled at " + Time::FormatString("%F %T"));
         else file.WriteLine("End of speedrun at " + Time::FormatString("%F %T"));
 	    file.Close();
-    IO::Move(logFileName, actualSpeedrunPath + "/" + (isCanceled?"CANCELED_":"") + logFileCode+"_"+Speedrun::FormatTimer(SumCompleteTimeWithRespawns).Replace(":", ".") + ".txt");
+        string categoryName = StripFormatCodes(pastCampaigns[0].name);
+        if (g_LiveSplit !is null && g_LiveSplit.connected) {
+            categoryName = g_LiveSplit.getCategoryNameAsync();
+        }
+        IO::Move(logFileName, actualSpeedrunPath + "/" + (isCanceled?"CANCELED_":"") + categoryName + "_" + logFileCode+"_"+Speedrun::FormatTimer(SumCompleteTimeWithRespawns).Replace(":", ".") + ".txt");
     }
 
     void CreateReplay()

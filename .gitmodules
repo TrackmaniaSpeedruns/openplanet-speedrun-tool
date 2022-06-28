@@ -1,6 +1,0 @@
-[submodule "LiveSplit.Server"]
-	path = LiveSplit.Server
-	url = https://github.com/GreepTheSheep/LiveSplit.TMServer
-[submodule "PlayerState"]
-	path = PlayerState
-	url = https://github.com/thommie-echo/TMNext-PlayerState

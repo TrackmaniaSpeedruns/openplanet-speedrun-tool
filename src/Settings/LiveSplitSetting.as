@@ -106,4 +106,9 @@ namespace PluginSettings
             }
         }
     }
+
+    void UpdateLiveSplitExtension()
+    {
+        g_LiveSplit.UpdateExtensionAsync();
+    }
 }

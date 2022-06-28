@@ -44,6 +44,11 @@ class HomeSWTab : SWTab
 
                 if (PluginSettings::LiveSplitServerVersion.Length > 0) {
                     UI::Text(Icons::PuzzlePiece + " LiveSplit Server for Trackmania Extension \\$777Version "+PluginSettings::LiveSplitServerVersion);
+                    UI::SameLine();
+                    UI::TextDisabled(Icons::InfoCircle);
+                    UI::SetPreviousTooltip("LiveSplit server updates are automatically downloaded within the LiveSplit application.\n\nClick to force update the extension.");
+                    if (UI::IsItemClicked())
+                        Renderables::Add(LiveSplitExtensionUpdateConfirm());
                 }
             } else UI::Text("\\$f00" + Icons::Times + " \\$zDisconnected");
 

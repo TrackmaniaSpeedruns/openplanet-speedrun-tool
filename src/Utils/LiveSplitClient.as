@@ -82,6 +82,24 @@ class LiveSplitClient
         }
     }
 
+    void UpdateExtensionAsync()
+    {
+        if (PluginSettings::LiveSplitAppPath.Length < 3) {
+            error("LiveSplitAppPath is not set.");
+            UI::ShowNotification(Icons::Times + " Speedrun - Error", "LiveSplit Application Path is not set.", vec4(1, 0, 0, 1));
+            return;
+        }
+        trace("Updating LiveSplit extension...");
+        Net::HttpRequest@ req = API::Get("https://github.com/TrackmaniaSpeedruns/LiveSplit.TMServer/releases/latest/download/LiveSplit.TMServer.dll");
+        while (!req.Finished()) {
+            yield();
+        }
+        req.SaveToFile(PluginSettings::LiveSplitAppPath + "/Components/LiveSplit.TMServer.dll");
+        print("LiveSplit.TMServer.dll is updated. Please restart LiveSplit.");
+        Renderables::Add(LiveSplitExtensionUpdateDone());
+        UI::ShowNotification(Icons::Check + " Speedrun - Update", "The Server for Trackmania extension is updated. Please restart LiveSplit.", 10000);
+    }
+
     void startOrSplit()
     {
         if (connected) {

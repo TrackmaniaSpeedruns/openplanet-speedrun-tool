@@ -81,7 +81,7 @@ class SpeedrunStatusTab : SWTab
             )) {
                 if (g_LiveSplit !is null && g_LiveSplit.connected)
                     g_LiveSplit.reset();
-                Speedrun::RestartSpeedrun();
+                startnew(Speedrun::RestartSpeedrun);
             }
         }
         else {

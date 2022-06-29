@@ -569,13 +569,13 @@ namespace Speedrun
                         heldResetComboKey = down;
                     } else if(heldResetComboKey && key == PluginSettings::KeysResetSpeedrunKey2 && !g_speedrun.firstMap) {
                         UI::ShowNotification("Restarting speedrun...");
-                        RestartSpeedrun();
+                        startnew(RestartSpeedrun);
                         return true;
                     }
                 } else {
                     if (key == PluginSettings::KeysResetSpeedrunKey1 && !g_speedrun.firstMap) {
                         UI::ShowNotification("Restarting speedrun...");
-                        RestartSpeedrun();
+                        startnew(RestartSpeedrun);
                         return true;
                     }
                 }

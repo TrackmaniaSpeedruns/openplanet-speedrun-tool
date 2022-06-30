@@ -463,6 +463,22 @@ namespace Speedrun
         startnew(StartSpeedrun);
     }
 
+    void StopSpeedrun()
+    {
+        g_speedrun.IsRunning = false;
+        g_speedrun.currentCampaignType = Campaigns::campaignType::Unknown;
+        g_speedrun.MapCompleteTime = 0;
+        g_speedrun.SumCompleteTime = 0;
+        g_speedrun.SumCompleteTimeWithRespawns = 0;
+        g_speedrun.resetCounter = 0;
+        g_speedrun.logInitialized = false;
+        if (PluginSettings::WriteSpeedrunLog)
+            g_speedrun.EndOfFileLog(true);
+
+        // remove all maps from queue
+        g_speedrun.mapPlaylist.RemoveRange(0, g_speedrun.mapPlaylist.Length);
+    }
+
     void FetchCampaign(int campaignId = 0, int clubId = 0)
     {
         Json::Value tmioRes;

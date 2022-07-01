@@ -4,7 +4,7 @@ author = "Greep"
 category = "Speedrunning"
 siteid = 199
 
-version = "1.0.5"
+version = "1.0.6"
 
 [script]
 imports = [ "Permissions.as", "Formatting.as" ]

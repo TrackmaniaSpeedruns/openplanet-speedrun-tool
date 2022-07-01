@@ -130,7 +130,7 @@ class Speedrun
         {
             if (TMData.PlayerState == PlayerState::EPlayerState::EPlayerState_Driving)
             {
-                if (g_speedrun.firstMap && PluginSettings::SwitcherNextMapOnMedal == Speedrun::Medals[0]) // Don't reset the timer if a specific medal is choosen
+                if (g_speedrun.firstMap) // TODO: Don't reset the timer if a specific medal is choosen
                 {
                     g_LiveSplit.StartTimer();
                     g_LiveSplit.setgametime("0");

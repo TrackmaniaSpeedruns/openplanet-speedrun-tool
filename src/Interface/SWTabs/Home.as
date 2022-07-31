@@ -58,23 +58,35 @@ class HomeSWTab : SWTab
         }
 
         UI::PushFont(t_header);
-        UI::Text(PLUGIN_COLOR + Icons::Plug + " \\$zPlugin");
+        UI::Text(PLUGIN_COLOR+Icons::ClockO+" \\$zTrackmania Speedruns");
         UI::PopFont();
-        UI::Text("Made by \\$777" + Meta::ExecutingPlugin().Author);
-        UI::Text("Version \\$777" + Meta::ExecutingPlugin().Version);
-        UI::Text("Plugin ID \\$777" + Meta::ExecutingPlugin().ID);
-        UI::Text("Site ID \\$777" + Meta::ExecutingPlugin().SiteID);
-        UI::Text("Type \\$777" + tostring(Meta::ExecutingPlugin().Type));
-        if (IS_DEV_MODE) {
-            UI::SameLine();
-            UI::Text("\\$777(\\$f39"+Icons::Code+" \\$777Dev mode)");
-        }
+        if (UI::Button(Icons::Discord + " Join TMSR Discord")) OpenBrowserURL("https://discord.gg/VkZxU32Mzf");
+        UI::SameLine();
+        if (UI::Button(Icons::ListOl + " speedrun.com leaderboard")) OpenBrowserURL("https://speedrun.com/tm");
 
         UI::Separator();
-        UI::PushFont(t_header);
-        UI::Text("\\$f39" + Icons::Heartbeat + " \\$zOpenplanet");
-        UI::PopFont();
-        UI::Text("Version \\$777" + Meta::OpenplanetBuildInfo());
+        if (UI::CollapsingHeader(Icons::Info + " Plugin")) {
+            UI::PushFont(t_header);
+            UI::Text(PLUGIN_COLOR + Icons::Plug + " \\$zPlugin");
+            UI::PopFont();
+            UI::Text("Made by \\$777" + Meta::ExecutingPlugin().Author);
+            UI::Text("Version \\$777" + Meta::ExecutingPlugin().Version);
+            UI::Text("Plugin ID \\$777" + Meta::ExecutingPlugin().ID);
+            UI::Text("Site ID \\$777" + Meta::ExecutingPlugin().SiteID);
+            UI::Text("Type \\$777" + tostring(Meta::ExecutingPlugin().Type));
+            if (IS_DEV_MODE) {
+                UI::SameLine();
+                UI::Text("\\$777(\\$f39"+Icons::Code+" \\$777Dev mode)");
+            }
+
+            if (UI::Button(Icons::Github + " Github")) OpenBrowserURL(GITHUB_URL);
+
+            UI::Separator();
+            UI::PushFont(t_header);
+            UI::Text("\\$f39" + Icons::Heartbeat + " \\$zOpenplanet");
+            UI::PopFont();
+            UI::Text("Version \\$777" + Meta::OpenplanetBuildInfo());
+        }
 
         UI::EndChild();
     }

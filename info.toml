@@ -9,5 +9,6 @@ version = "1.0.6"
 [script]
 imports = [ "Permissions.as", "Formatting.as" ]
 dependencies = [ "PlayerState" ]
+optional_dependencies = [ "ChaosMode" ]
 
 timeout = 0

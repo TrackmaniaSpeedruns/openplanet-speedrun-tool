@@ -25,6 +25,16 @@ namespace PluginSettings
         "No split"
     };
 
+    array<string> SpeedrunModes = {
+        "Normal"
+#if DEPENDENCY_CHAOSMODE
+        ,"Chaos Mode"
+#endif
+    };
+
+    [Setting hidden]
+    string SpeedrunMode = SpeedrunModes[0];
+
     [Setting hidden]
     string LiveSplitSplitOn = LiveSplitSplitOnSettings[0];
 
@@ -81,5 +91,28 @@ namespace PluginSettings
                 UI::EndCombo();
             }
         }
+
+        UI::Text("Speedrun mode:");
+        UI::SameLine();
+        UI::SetNextItemWidth(140);
+        if (UI::BeginCombo("###SpeedrunModeOptionCombo", SpeedrunMode)){
+            for (uint i = 0; i < SpeedrunModes.Length; i++) {
+                string mode = SpeedrunModes[i];
+
+                if (UI::Selectable(mode, SpeedrunMode == mode)) {
+                    SpeedrunMode = mode;
+                }
+
+                if (SpeedrunMode == mode) {
+                    UI::SetItemDefaultFocus();
+                }
+            }
+            UI::EndCombo();
+        }
+#if !DEPENDENCY_CHAOSMODE
+        if (SpeedrunMode == "Chaos Mode") {
+            SpeedrunMode = SpeedrunModes[0];
+        }
+#endif
     }
 }

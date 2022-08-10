@@ -271,7 +271,9 @@ class Speedrun
         if (g_LiveSplit !is null && g_LiveSplit.connected) gameName = g_LiveSplit.getGameNameAsync();
         string liveSplitServerVersion = "";
         if (g_LiveSplit !is null && g_LiveSplit.connected) liveSplitServerVersion = " - LiveSplit Server version " + PluginSettings::LiveSplitServerVersion;
-        file.WriteLine(gameName + " - " + StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T") + " - Speedrun plugin version " + Meta::ExecutingPlugin().Version + liveSplitServerVersion);
+        file.WriteLine(gameName + " - " + StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T"));
+        file.WriteLine("Speedrun plugin version " + Meta::ExecutingPlugin().Version + liveSplitServerVersion);
+        file.WriteLine("Mode:" + PluginSettings::SpeedrunMode);
         file.WriteLine();
         file.WriteLine("Sum | Segment | Track");
 	    file.Close();
@@ -371,6 +373,13 @@ namespace Speedrun
         }
         UI::ShowNotification("Loading map...", ColoredString(g_speedrun.mapPlaylist[0].name));
         g_speedrun.mapCounter = 1;
+#if DEPENDENCY_CHAOSMODE
+            if (PluginSettings::SpeedrunMode == "Chaos Mode") {
+                ChaosMode::SetRMCMode(true);
+                trace("Loading map in Chaos Mode");
+                app.ManiaTitleControlScriptAPI.PlayMap(g_speedrun.mapPlaylist[0].file_url, "TrackMania/ChaosModeRMC", "");
+            } else
+#endif
         app.ManiaTitleControlScriptAPI.PlayMap(g_speedrun.mapPlaylist[0].file_url, "", "");
         g_speedrun.mapPlaylist.RemoveAt(0);
 
@@ -412,6 +421,12 @@ namespace Speedrun
             UI::ShowNotification("Loading map...", ColoredString(g_speedrun.mapPlaylist[0].name));
             if (PluginSettings::HideUIOnLoadMap) UI::HideOverlay();
             g_speedrun.mapCounter++;
+#if DEPENDENCY_CHAOSMODE
+            if (ChaosMode::IsInRMCMode()) {
+                trace("Loading map in Chaos Mode");
+                app.ManiaTitleControlScriptAPI.PlayMap(g_speedrun.mapPlaylist[0].file_url, "TrackMania/ChaosModeRMC", "");
+            } else
+#endif
             app.ManiaTitleControlScriptAPI.PlayMap(g_speedrun.mapPlaylist[0].file_url, "", "");
             g_speedrun.mapPlaylist.RemoveAt(0);
         }
@@ -436,6 +451,11 @@ namespace Speedrun
                 if (PluginSettings::WriteSpeedrunLog)
                     g_speedrun.EndOfFileLog();
                 g_speedrun.IsRunning = false;
+#if DEPENDENCY_CHAOSMODE
+                if (ChaosMode::IsInRMCMode()) {
+                    ChaosMode::SetRMCMode(false);
+                }
+#endif
             }
         }
     }
@@ -466,6 +486,11 @@ namespace Speedrun
     void StopSpeedrun()
     {
         g_speedrun.IsRunning = false;
+#if DEPENDENCY_CHAOSMODE
+        if (ChaosMode::IsInRMCMode()) {
+            ChaosMode::SetRMCMode(false);
+        }
+#endif
         g_speedrun.currentCampaignType = Campaigns::campaignType::Unknown;
         g_speedrun.MapCompleteTime = 0;
         g_speedrun.SumCompleteTime = 0;

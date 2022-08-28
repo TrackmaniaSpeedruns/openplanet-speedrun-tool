@@ -3,7 +3,7 @@ class ClubCampaignsSelectSWTab : CampaignListSWTab
     string t_search;
     uint64 t_typingStart;
 
-    string GetLabel() override { return Icons::Boxes + " Club Campaigns"; }
+    string GetLabel() override { return Icons::Cubes + " Club Campaigns"; }
 
     vec4 GetColor() override { return vec4(0.57, 0.61, 0.22, 1); }
 

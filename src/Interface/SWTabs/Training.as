@@ -18,7 +18,7 @@ class TrainingSelectSWTab : SWTab
 
     vec4 GetColor() override { return vec4(0, 0, 0, 1); }
 
-    void Render()
+    void Render() override
     {
         bool isSelected = false;
         for (uint i = 0; i < g_SpeedrunWindow.selectedCampaigns.Length; i++)

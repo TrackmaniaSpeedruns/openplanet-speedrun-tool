@@ -1,10 +1,10 @@
 class SpeedrunStatusTab : SWTab
 {
 
-    string GetLabel() { return PLUGIN_ICON; }
+    string GetLabel() override { return PLUGIN_ICON; }
     string GetTooltip() override { return "Status"; }
 
-    vec4 GetColor() { return vec4(0.6, 0.6, 0.6, 1); }
+    vec4 GetColor() override { return vec4(0.6, 0.6, 0.6, 1); }
 
     bool CheckLiveSplit()
     {

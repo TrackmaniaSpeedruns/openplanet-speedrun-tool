@@ -18,7 +18,7 @@ class HomeSWTab : SWTab
         vec2 posTop = UI::GetCursorPos();
 
         UI::BeginChild("Icon", vec2(width,0));
-        auto logo = Images::CachedFromURL("https://cdn.discordapp.com/icons/396655697334501376/f6d512c8bfe5a0cc0fe0b12d173dfe25.png?size=1024");
+        auto logo = Images::CachedFromURL("https://cdn.discordapp.com/icons/396655697334501376/2bcdeb3bb7e94e46722fe046449642cc.png?size=1024");
         if (logo.m_texture !is null){
             vec2 imageSize = logo.m_texture.GetSize();
             UI::Image(logo.m_texture, vec2(

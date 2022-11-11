@@ -1,9 +1,9 @@
 class IndividualMapTab : SWTab
 {
-    string GetLabel() { return Icons::Map; }
+    string GetLabel() override { return Icons::Map; }
     string GetTooltip() override { return "Individual Map"; }
 
-    vec4 GetColor() { return vec4(1, 0, 0.76, 1); }
+    vec4 GetColor() override { return vec4(1, 0, 0.76, 1); }
 
     bool IsVisible() override { return GetApp().RootMap !is null; }
 

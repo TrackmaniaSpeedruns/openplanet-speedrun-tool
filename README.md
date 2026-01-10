@@ -5,3 +5,8 @@ Note: this plugin requires the [PlayerState](https://openplanet.dev/plugin/playe
 This plugin integrates LiveSplit. In order to work, you need the [LiveSplit Server plugin](https://github.com/GreepTheSheep/LiveSplit.Server/releases/latest).
 
 ![image](https://user-images.githubusercontent.com/42576124/169465581-0eabc2fc-b58f-449a-98de-c723c4979546.png)
+
+## Roadmap for v1.1.1
+
+- [ ] tm.io deprecation warning when loading the favorites tab
+- [ ] Automatically reconnect to LiveSplit Server if the connection is lost (using client-to-server commands every ~30-60 seconds)

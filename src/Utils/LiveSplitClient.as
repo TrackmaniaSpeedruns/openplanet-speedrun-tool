@@ -5,7 +5,7 @@ class LiveSplitClient
     bool connectTimeout = false;
     string lastResult = "";
     int connexionAttemptDelay = 0;
-    int connexionAttemptDelayMax = 200;
+    int connexionAttemptDelayMax = 300;
     bool isTimerPaused = false;
 
     LiveSplitClient()

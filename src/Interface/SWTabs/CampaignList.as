@@ -2,8 +2,8 @@ class CampaignListSWTab : SWTab
 {
     Net::HttpRequest@ m_request;
     array<CampaignSummary@> campaigns;
-    int request = 50;
-    int pageSize = 50;
+    uint request = 50;
+    uint pageSize = 50;
     bool moreavailable = true;
 
     bool ShowLoadMore() { return true; }

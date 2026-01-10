@@ -107,7 +107,7 @@ class LiveSplitClient
         }
     }
 
-    void setgametime(string timeSeconds)
+    void setgametime(const string &in timeSeconds)
     {
         if (connected) {
             send("setgametime "+timeSeconds);

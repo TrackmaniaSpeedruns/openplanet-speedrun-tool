@@ -19,7 +19,7 @@ class TOTDSelectSWTab : CampaignListSWTab
     void LoadCampaigns(int count, int offset) override {
         auto result = API::CallLiveApiPath("/api/token/campaign/month?length="+count+"&offset="+(offset+1)); //offset+1 to skip current month
         auto items = result["monthList"];
-        for(int i = 0; i < items.Length; i++) {
+        for(uint i = 0; i < items.Length; i++) {
             auto json = Json::Object();
             json["id"] = (items[i]["year"] - 2020) * 12 + items[i]["month"];
             json["name"] = GetMonthName(items[i]["month"]) + " " + Json::Write(items[i]["year"]);

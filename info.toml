@@ -4,10 +4,10 @@ author = "Greep"
 category = "Speedrunning"
 siteid = 199
 
-version = "1.0.7"
+version = "1.1.0"
 
 [script]
-dependencies = [ "NadeoServices","PlayerState" ]
+dependencies = [ "NadeoServices", "PlayerState" ]
 optional_dependencies = [ "ChaosMode" ]
 
 timeout = 0

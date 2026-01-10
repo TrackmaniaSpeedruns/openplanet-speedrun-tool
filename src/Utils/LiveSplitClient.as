@@ -23,7 +23,7 @@ class LiveSplitClient
             return;
         }
 
-        while (!sock.CanRead() && !sock.CanWrite()) {
+        while (!sock.IsReady()) {
             yield();
             if (connexionAttemptDelay >= connexionAttemptDelayMax) {
                 error("Failed to connect to LiveSplit server. (Timeout)");

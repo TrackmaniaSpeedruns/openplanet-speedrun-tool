@@ -142,7 +142,7 @@ class FavoritesSWTab : SWTab
                     UI::SetPreviousTooltip("Add to current campaigns playlist");
                     if (isSelected) g_SpeedrunWindow.selectedCampaigns.InsertLast(favCampaign);
                     UI::SameLine();
-                    UI::Text(ColoredString(favCampaign.name));
+                    UI::Text(Text::OpenplanetFormatCodes(favCampaign.name));
                     UI::PopID();
                 }
             }
@@ -224,7 +224,7 @@ class FavoritesSWTab : SWTab
                     }
                     UI::SetPreviousTooltip("Add playlist to selection");
                     UI::SameLine();
-                    UI::Text(ColoredString(playlistName));
+                    UI::Text(Text::OpenplanetFormatCodes(playlistName));
                     UI::SetPreviousTooltip(campaignsName);
                     UI::PopID();
                 }

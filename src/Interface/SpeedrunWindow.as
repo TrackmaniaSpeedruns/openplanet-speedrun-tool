@@ -26,6 +26,15 @@ class SpeedrunWindow
         }
     }
 
+    void Load(){
+        while (true){
+            for (uint i = 0; i < tabs.Length; i++) {
+                tabs[i].Load();
+            }
+            yield();
+        }
+    }
+
     void Render()
     {
         isOpened = PluginSettings::SpeedrunWindowOpened;

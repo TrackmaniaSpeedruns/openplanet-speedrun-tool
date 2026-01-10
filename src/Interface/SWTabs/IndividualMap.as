@@ -12,7 +12,7 @@ class IndividualMapTab : SWTab
         CGameCtnChallenge@ Map = cast<CGameCtnChallenge>(GetApp().RootMap);
         UI::Columns(2, "ColumsMapTab");
         UI::BeginChild("Map");
-        UI::Text(ColoredString(Map.MapName));
+        UI::Text(Text::OpenplanetFormatCodes(Map.MapName));
         UI::Text("by " + Map.AuthorNickName);
         UI::NewLine();
         if (g_LiveSplit !is null && g_LiveSplit.connected)

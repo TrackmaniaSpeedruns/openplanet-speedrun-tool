@@ -7,8 +7,7 @@ siteid = 199
 version = "1.0.7"
 
 [script]
-imports = [ "Permissions.as", "Formatting.as" ]
-dependencies = [ "PlayerState" ]
+dependencies = [ "NadeoServices","PlayerState" ]
 optional_dependencies = [ "ChaosMode" ]
 
 timeout = 0

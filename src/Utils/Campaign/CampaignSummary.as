@@ -1,29 +1,18 @@
 class CampaignSummary
 {
     int id;
-    int clubid;
     string name;
-    uint timestamp;
-    int mapcount;
     string typeStr;
     Campaigns::campaignType type;
+    Json::Value mapUids;
 
     CampaignSummary(const Json::Value &in json)
     {
         id = json["id"];
-        clubid = json["clubid"];
         name = json["name"];
-        timestamp = json["timestamp"];
-        mapcount = json["mapcount"];
+        if (json.HasKey("mapUids") && json["mapUids"].GetType() != Json::Type::Null) mapUids = json["mapUids"];
         if (json.HasKey("type") && json["type"].GetType() != Json::Type::Null) typeStr = json["type"];
         else typeStr = "Unknown";
-
-        // Parse type from tmio API (depending of the club id)
-        if (typeStr == "Unknown")
-        {
-            if (clubid == 0) typeStr = "Season";
-            else typeStr = "Club";
-        }
 
         // we need to convert string to enum
         if (typeStr == "Season") type = Campaigns::campaignType::Season;
@@ -37,11 +26,9 @@ class CampaignSummary
     {
         Json::Value json = Json::Object();
         json["id"] = id;
-        json["clubid"] = clubid;
         json["name"] = name;
-        json["timestamp"] = timestamp;
-        json["mapcount"] = mapcount;
         json["type"] = tostring(type);
+        json["mapUids"] = mapUids;
         return json;
     }
 }

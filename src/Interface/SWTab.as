@@ -22,4 +22,5 @@ class SWTab
     }
 
     void Render() {}
+    void Load() {}
 }

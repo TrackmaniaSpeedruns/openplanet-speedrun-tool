@@ -256,7 +256,7 @@ class Speedrun
             }
             logFileCode = base36DateTime;
 
-            string categoryName = StripFormatCodes(currentCampaign.name);
+            string categoryName = Text::StripFormatCodes(currentCampaign.name);
             if (g_LiveSplit !is null && g_LiveSplit.connected) {
                 categoryName = g_LiveSplit.getCategoryNameAsync();
             }
@@ -271,7 +271,7 @@ class Speedrun
         if (g_LiveSplit !is null && g_LiveSplit.connected) gameName = g_LiveSplit.getGameNameAsync();
         string liveSplitServerVersion = "";
         if (g_LiveSplit !is null && g_LiveSplit.connected) liveSplitServerVersion = " - LiveSplit Server version " + PluginSettings::LiveSplitServerVersion;
-        file.WriteLine(gameName + " - " + StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T"));
+        file.WriteLine(gameName + " - " + Text::StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T"));
         file.WriteLine("Speedrun plugin version " + Meta::ExecutingPlugin().Version + liveSplitServerVersion);
         file.WriteLine("Mode:" + PluginSettings::SpeedrunMode);
         file.WriteLine();
@@ -284,7 +284,7 @@ class Speedrun
     {
         IO::File file(logFileName);
         file.Open(IO::FileMode::Append);
-        string line = Speedrun::FormatTimer(SumCompleteTimeWithRespawns) + " | " + Speedrun::FormatTimer(MapCompleteTime) + " | " + StripFormatCodes(TMData.dMapInfo.MapName) + (isReset ? (" (Reset "+resetCounter+")") : "");
+        string line = Speedrun::FormatTimer(SumCompleteTimeWithRespawns) + " | " + Speedrun::FormatTimer(MapCompleteTime) + " | " + Text::StripFormatCodes(TMData.dMapInfo.MapName) + (isReset ? (" (Reset "+resetCounter+")") : "");
         print(line);
         file.WriteLine(line);
 	    file.Close();
@@ -298,7 +298,7 @@ class Speedrun
         if (isCanceled) file.WriteLine("Speedrun canceled at " + Time::FormatString("%F %T"));
         else file.WriteLine("End of speedrun at " + Time::FormatString("%F %T"));
 	    file.Close();
-        string categoryName = StripFormatCodes(pastCampaigns[0].name);
+        string categoryName = Text::StripFormatCodes(pastCampaigns[0].name);
         if (g_LiveSplit !is null && g_LiveSplit.connected) {
             categoryName = g_LiveSplit.getCategoryNameAsync();
         }
@@ -313,7 +313,7 @@ class Speedrun
         CGamePlayground@ GamePlayground = cast<CGamePlayground>(app.CurrentPlayground);
         if (app.RootMap !is null)
         {
-            if (playgroundScript !is null && GamePlayground.GameTerminals.get_Length() > 0)
+            if (playgroundScript !is null && GamePlayground.GameTerminals.Length > 0)
             {
                 CSmPlayer@ player = cast<CSmPlayer>(GamePlayground.GameTerminals[0].ControlledPlayer);
                 if (player !is null)
@@ -324,7 +324,7 @@ class Speedrun
                         auto ghost = playgroundScript.Ghost_RetrieveFromPlayer(playerScriptAPI);
                         if (ghost !is null)
                         {
-                            string safeMapName = StripFormatCodes(app.RootMap.MapName);
+                            string safeMapName = Text::StripFormatCodes(app.RootMap.MapName);
                             string safeUserName = ghost.Nickname;
                             string fmtGhostTime = Speedrun::FormatTimer(ghost.Result.Time).Replace(":", "-");
                             string replayName = mapCounter + " - " + safeMapName + " - " + safeUserName + " - " + Time::FormatString("%F_%H-%M-%S") + " (" + fmtGhostTime + ")";
@@ -361,7 +361,7 @@ namespace Speedrun
         CampaignSummary@ campaign = g_SpeedrunWindow.selectedCampaigns[0];
         g_speedrun.currentCampaignType = campaign.type;
         @g_speedrun.currentCampaign = campaign;
-        FetchCampaign(campaign.id, campaign.clubid);
+        FetchCampaign(campaign);
         g_speedrun.pastCampaigns.InsertLast(campaign);
         g_SpeedrunWindow.selectedCampaigns.RemoveAt(0);
         if (PluginSettings::HideUIOnLoadMap) UI::HideOverlay();
@@ -371,7 +371,7 @@ namespace Speedrun
         while(!app.ManiaTitleControlScriptAPI.IsReady) {
             yield();
         }
-        UI::ShowNotification("Loading map...", ColoredString(g_speedrun.mapPlaylist[0].name));
+        UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(g_speedrun.mapPlaylist[0].name));
         g_speedrun.mapCounter = 1;
 #if DEPENDENCY_CHAOSMODE
             if (PluginSettings::SpeedrunMode == "Chaos Mode") {
@@ -418,7 +418,7 @@ namespace Speedrun
             while(!app.ManiaTitleControlScriptAPI.IsReady) {
                 yield();
             }
-            UI::ShowNotification("Loading map...", ColoredString(g_speedrun.mapPlaylist[0].name));
+            UI::ShowNotification("Loading map...", Text::OpenplanetFormatCodes(g_speedrun.mapPlaylist[0].name));
             if (PluginSettings::HideUIOnLoadMap) UI::HideOverlay();
             g_speedrun.mapCounter++;
 #if DEPENDENCY_CHAOSMODE
@@ -437,8 +437,8 @@ namespace Speedrun
                 CampaignSummary@ campaign = g_SpeedrunWindow.selectedCampaigns[0];
                 g_speedrun.currentCampaignType = campaign.type;
                 @g_speedrun.currentCampaign = campaign;
-                UI::ShowNotification("Switching to campaign: " + ColoredString(campaign.name));
-                FetchCampaign(campaign.id, campaign.clubid);
+                UI::ShowNotification("Switching to campaign: " + Text::OpenplanetFormatCodes(campaign.name));
+                FetchCampaign(campaign);
                 g_speedrun.pastCampaigns.InsertLast(campaign);
                 g_SpeedrunWindow.selectedCampaigns.RemoveAt(0);
                 if (PluginSettings::WriteSpeedrunLog)
@@ -504,9 +504,31 @@ namespace Speedrun
         g_speedrun.mapPlaylist.RemoveRange(0, g_speedrun.mapPlaylist.Length);
     }
 
-    void FetchCampaign(int campaignId = 0, int clubId = 0)
+    void FetchCampaign(CampaignSummary@ campaign)
     {
-        Json::Value tmioRes;
+        if (campaign.mapUids.Length > 0) {
+            string mapUidList = "";
+
+            for (uint i = 0; i < campaign.mapUids.Length; i++) {
+                if (i > 0) mapUidList += ",";
+                mapUidList += campaign.mapUids[i];
+            }
+
+            Json::Value mapInfos = API::CallLiveApiPath("/api/token/map/get-multiple?mapUidList=" + mapUidList);
+
+            for (uint i = 0; i < mapInfos["mapList"].Length; i++) {
+                Json::Value mapJson = mapInfos["mapList"][i];
+                MapInfo@ newmap = MapInfo();
+                newmap.campaignId = campaign.id;
+                newmap.author = mapJson["author"];
+                newmap.name = mapJson["name"];
+                newmap.uid = mapJson["mapId"];
+                newmap.file_url = mapJson["downloadUrl"];
+                if (IS_DEV_MODE) trace("Adding map: " + Text::StripFormatCodes(newmap.name) + " to speedrun playlist");
+                g_speedrun.mapPlaylist.InsertLast(newmap);
+            }
+        }
+        
         switch (g_speedrun.currentCampaignType)
         {
 			case Campaigns::campaignType::Training :
@@ -516,66 +538,21 @@ namespace Speedrun
                     newmap.campaignId = 3;
                     newmap.file_url = "Campaigns\\Training\\Training - " + Text::Format("%02d", i) + ".Map.Gbx";
                     newmap.name = "Training - " + Text::Format("%02d", i);
-                    if (IS_DEV_MODE) trace("Adding map: " + StripFormatCodes(newmap.name) + " to speedrun playlist");
+                    if (IS_DEV_MODE) trace("Adding map: " + Text::StripFormatCodes(newmap.name) + " to speedrun playlist");
                     g_speedrun.mapPlaylist.InsertLast(newmap);
                 }
 				break;
 			case Campaigns::campaignType::Season :
                 print("Season");
-                tmioRes = API::GetAsync("https://trackmania.io/api/officialcampaign/" + campaignId);
-
-                for (uint i = 0; i < tmioRes["playlist"].Length; i++) {
-                    Json::Value mapJson = tmioRes["playlist"][i];
-                    MapInfo@ newmap = MapInfo();
-                    newmap.campaignId = tmioRes["id"];
-                    newmap.author = mapJson["author"];
-                    newmap.name = mapJson["name"];
-                    newmap.filename = mapJson["filename"];
-                    newmap.uid = mapJson["mapUid"];
-                    newmap.file_url = mapJson["fileUrl"];
-                    newmap.exchange_id = mapJson["exchangeid"];
-                    if (IS_DEV_MODE) trace("Adding map: " + StripFormatCodes(newmap.name) + " to speedrun playlist");
-                    g_speedrun.mapPlaylist.InsertLast(newmap);
-                }
 				break;
 			case Campaigns::campaignType::TOTD :
                 print("TOTD");
-                tmioRes = API::GetAsync("https://trackmania.io/api/totd/" + campaignId);
-
-                for (uint i = 0; i < tmioRes["days"].Length; i++) {
-                    Json::Value dayJson = tmioRes["days"][i];
-                    MapInfo@ newmap = MapInfo();
-                    newmap.campaignId = dayJson["campaignid"];
-                    newmap.author = dayJson["map"]["authorplayer"]["name"];
-                    newmap.name = dayJson["map"]["name"];
-                    newmap.filename = dayJson["map"]["filename"];
-                    newmap.uid = dayJson["map"]["mapUid"];
-                    newmap.file_url = dayJson["map"]["fileUrl"];
-                    newmap.exchange_id = dayJson["map"]["exchangeid"];
-                    if (IS_DEV_MODE) trace("Adding TOTD map: " + StripFormatCodes(newmap.name) + " to speedrun playlist");
-                    g_speedrun.mapPlaylist.InsertLast(newmap);
-                }
 				break;
 			case Campaigns::campaignType::Club :
                 print("Club");
-                tmioRes = API::GetAsync("https://trackmania.io/api/campaign/" + clubId + "/" + campaignId);
-
-                for (uint i = 0; i < tmioRes["playlist"].Length; i++) {
-                    Json::Value mapJson = tmioRes["playlist"][i];
-                    MapInfo@ newmap = MapInfo();
-                    newmap.campaignId = tmioRes["id"];
-                    newmap.author = mapJson["author"];
-                    newmap.name = mapJson["name"];
-                    newmap.filename = mapJson["filename"];
-                    newmap.uid = mapJson["mapUid"];
-                    newmap.file_url = mapJson["fileUrl"];
-                    newmap.exchange_id = mapJson["exchangeid"];
-                    if (IS_DEV_MODE) trace("Adding map: " + StripFormatCodes(newmap.name) + " to speedrun playlist");
-                    g_speedrun.mapPlaylist.InsertLast(newmap);
-                }
 				break;
 			default:
-				warn("Unknown campaign type for campaign " + campaignId);
+				warn("Unknown campaign type for campaign " + campaign.id);
         }
     }
 

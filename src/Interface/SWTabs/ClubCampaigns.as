@@ -9,38 +9,26 @@ class ClubCampaignsSelectSWTab : CampaignListSWTab
 
     bool IsVisible() override { return Permissions::PlayPublicClubCampaign(); }
 
-    void GetRequestParams(dictionary@ params) override
-    {
-        if (t_search.Length > 1) params.Set("search", t_search);
-        CampaignListSWTab::GetRequestParams(params);
-    }
-
-    void CheckStartRequest() override
-    {
-        if (campaigns.Length == 0 && m_request is null && UI::IsWindowAppearing()) {
-            StartRequest();
-        }
-
-        if (m_request !is null) {
+    void LoadCampaigns(int count, int offset) override {
+        string requestedSearch = t_search;
+        auto result = API::CallLiveApiPath("/api/token/club/campaign?length="+count+"&offset="+offset+"&name="+t_search);
+        if (requestedSearch != t_search) {
+            // Search term changed while we were loading
             return;
         }
-
-        if (t_typingStart == 0) {
-            return;
-        }
-
-        if (Time::Now > t_typingStart + 1000) {
-            t_typingStart = 0;
-            StartRequest();
-        }
-    }
-
-    void HandleResponse(const Json::Value &in json) override
-    {
-        auto items = json["campaigns"];
+        Json::Value items = result["clubCampaignList"];
         for (uint i = 0; i < items.Length; i++) {
-            CampaignSummary@ campaign = CampaignSummary(items[i]);
-            if (campaign.type == Campaigns::campaignType::Club) campaigns.InsertLast(campaign);
+            auto json = Json::Object();
+            json["id"] = items[i]["id"];
+            json["name"] = items[i]["name"];
+            json["type"] = "Club";
+            json["mapUids"] = Json::Array();
+            auto playlist = items[i]["campaign"]["playlist"];
+            for (uint j = 0; j < playlist.Length; j++) {
+                json["mapUids"].Add(playlist[j]["mapUid"]);
+            }
+            CampaignSummary@ campaign = CampaignSummary(json);
+            campaigns.InsertLast(campaign);
         }
     }
 

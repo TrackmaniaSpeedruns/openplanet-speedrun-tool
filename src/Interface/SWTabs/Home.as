@@ -1,12 +1,5 @@
 class HomeSWTab : SWTab
 {
-    UI::Font@ t_header;
-
-    HomeSWTab()
-    {
-        @t_header = UI::LoadFont("DroidSans.ttf", 20, -1, -1, true, true, true);
-    }
-
     string GetLabel() override { return Icons::Home; }
     string GetTooltip() override { return "Home"; }
 
@@ -32,7 +25,7 @@ class HomeSWTab : SWTab
         UI::BeginChild("Description");
 
         if (g_LiveSplit !is null) {
-            UI::PushFont(t_header);
+            UI::PushFont(Fonts::Header);
             UI::Text(PLUGIN_ICON + "LiveSplit");
             UI::PopFont();
             UI::Text("Connexion status:");
@@ -57,7 +50,7 @@ class HomeSWTab : SWTab
             UI::Separator();
         }
 
-        UI::PushFont(t_header);
+        UI::PushFont(Fonts::Header);
         UI::Text(PLUGIN_COLOR+Icons::ClockO+" \\$zTrackmania Speedruns");
         UI::PopFont();
         if (UI::Button(Icons::Discord + " Join TMSR Discord")) OpenBrowserURL("https://discord.gg/VkZxU32Mzf");
@@ -66,7 +59,7 @@ class HomeSWTab : SWTab
 
         UI::Separator();
         if (UI::CollapsingHeader(Icons::Info + " Plugin")) {
-            UI::PushFont(t_header);
+            UI::PushFont(Fonts::Header);
             UI::Text(PLUGIN_COLOR + Icons::Plug + " \\$zPlugin");
             UI::PopFont();
             UI::Text("Made by \\$777" + Meta::ExecutingPlugin().Author);
@@ -82,7 +75,7 @@ class HomeSWTab : SWTab
             if (UI::Button(Icons::Github + " Github")) OpenBrowserURL(GITHUB_URL);
 
             UI::Separator();
-            UI::PushFont(t_header);
+            UI::PushFont(Fonts::Header);
             UI::Text("\\$f39" + Icons::Heartbeat + " \\$zOpenplanet");
             UI::PopFont();
             UI::Text("Version \\$777" + Meta::OpenplanetBuildInfo());

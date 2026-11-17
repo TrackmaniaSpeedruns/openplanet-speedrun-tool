@@ -41,11 +41,18 @@ namespace PluginSettings
     [SettingsTab name="Speedrun"]
     void RenderSpeedrunSettings()
     {
+        string speedrunPath = IO::FromUserGameFolder("Speedruns");
+
         // SwitcherPreloadCache = UI::WhiteCheckbox("Preload Cache", SwitcherPreloadCache);
         SwitcherAutoloadNextMap = UI::WhiteCheckbox("Auto skip to Next Map (recommended)", SwitcherAutoloadNextMap);
         HideUIOnLoadMap = UI::WhiteCheckbox("Hide Openplanet UI on map loading", HideUIOnLoadMap);
         WriteSpeedrunLog = UI::WhiteCheckbox("Output speedruns log files", WriteSpeedrunLog);
-        UI::SetPreviousTooltip("You can find your log files in " + IO::FromUserGameFolder("Speedruns"));
+        UI::SetPreviousTooltip("You can find your log files in " + speedrunPath);
+
+        if (UI::CyanButton(Icons::FolderO + " Open Speedruns folder")) {
+            if (!IO::FolderExists(speedrunPath)) IO::CreateFolder(speedrunPath);
+            OpenExplorerPath(speedrunPath);
+        }
 
         CreateReplayOnFinishMap = UI::WhiteCheckbox("Create replays", CreateReplayOnFinishMap);
 

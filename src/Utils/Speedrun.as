@@ -271,11 +271,12 @@ class Speedrun
         if (g_LiveSplit !is null && g_LiveSplit.connected) gameName = g_LiveSplit.getGameNameAsync();
         string liveSplitServerVersion = "";
         if (g_LiveSplit !is null && g_LiveSplit.connected) liveSplitServerVersion = " - LiveSplit Server version " + PluginSettings::LiveSplitServerVersion;
-        file.WriteLine(gameName + " - " + Text::StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T"));
+        file.WriteLine(gameName + " - " + Text::StripFormatCodes(currentCampaign.name) + " - started at " + Time::FormatString("%F %T (%Z)"));
         file.WriteLine("Speedrun plugin version " + Meta::ExecutingPlugin().Version + liveSplitServerVersion);
         file.WriteLine("Mode:" + PluginSettings::SpeedrunMode);
         file.WriteLine();
         file.WriteLine("Sum | Segment | Track");
+        file.WriteLine("--- | ------- | -----");
 	    file.Close();
         logInitialized = true;
     }
@@ -295,8 +296,8 @@ class Speedrun
         IO::File file(logFileName);
         file.Open(IO::FileMode::Append);
         file.WriteLine();
-        if (isCanceled) file.WriteLine("Speedrun canceled at " + Time::FormatString("%F %T"));
-        else file.WriteLine("End of speedrun at " + Time::FormatString("%F %T"));
+        if (isCanceled) file.WriteLine("Speedrun canceled at " + Time::FormatString("%F %T (%Z)"));
+        else file.WriteLine("End of speedrun at " + Time::FormatString("%F %T (%Z)"));
 	    file.Close();
         string categoryName = Text::StripFormatCodes(pastCampaigns[0].name);
         if (g_LiveSplit !is null && g_LiveSplit.connected) {
@@ -528,7 +529,7 @@ namespace Speedrun
                 g_speedrun.mapPlaylist.InsertLast(newmap);
             }
         }
-        
+
         switch (g_speedrun.currentCampaignType)
         {
 			case Campaigns::campaignType::Training :

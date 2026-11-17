@@ -90,14 +90,22 @@ class LiveSplitClient
             return;
         }
         trace("Updating LiveSplit extension...");
-        Net::HttpRequest@ req = API::Get("https://github.com/TrackmaniaSpeedruns/LiveSplit.TMServer/releases/latest/download/LiveSplit.TMServer.dll");
+        Net::HttpRequest@ req = API::Get(GITHUB_URL+GITHUB_REPO_AUTOSPLITTER+"/releases/latest/download/LiveSplit.TMServer.dll");
         while (!req.Finished()) {
             yield();
         }
-        req.SaveToFile(PluginSettings::LiveSplitAppPath + "/Components/LiveSplit.TMServer.dll");
-        print("LiveSplit.TMServer.dll is updated. Please restart LiveSplit.");
-        Renderables::Add(LiveSplitExtensionUpdateDone());
-        UI::ShowNotification(Icons::Check + " Speedrun - Update", "The Server for Trackmania extension is updated. Please restart LiveSplit.", 10000);
+        try {
+            string serverPluginFilePath = PluginSettings::LiveSplitAppPath + "/Components/LiveSplit.TMServer.dll";
+            req.SaveToFile(serverPluginFilePath);
+            print("LiveSplit.TMServer.dll is updated. Please restart LiveSplit.");
+            Renderables::Add(LiveSplitExtensionUpdateDone());
+            UI::ShowNotification(Icons::Check + " Speedrun - Update", "The Server for Trackmania extension is updated. Please restart LiveSplit.", 10000);
+        } catch {
+            string errorMsg = getExceptionInfo();
+            error(errorMsg);
+            Renderables::Add(LiveSplitExtensionUpdateFailed(errorMsg));
+            UI::ShowNotification(Icons::Times + " Speedrun - Update Failed", "Failed to update the extension: "+errorMsg, vec4(1, 0, 0, 1), 10000);
+        }
     }
 
     void startOrSplit()

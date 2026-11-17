@@ -59,7 +59,7 @@ namespace PluginSettings
             if (UI::Button(Icons::Refresh + " Restart client")) startnew(RestartLiveSplitClient);
         }
 
-        LiveSplitClientEnabled = UI::WhiteCheckbox("Enable LiveSplit client", LiveSplitClientEnabled);
+        LiveSplitClientEnabled = UI::Checkbox("Enable LiveSplit client", LiveSplitClientEnabled);
 
         if (LiveSplitClientEnabled)
         {

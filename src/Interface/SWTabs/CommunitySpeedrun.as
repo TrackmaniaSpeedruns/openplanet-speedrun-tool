@@ -35,7 +35,7 @@ class CommunitySpeedrunSWTab : SWTab
                 break;
             }
         }
-        isSelected = UI::WhiteCheckbox("Select Community \\$fc0Speedrun", isSelected);
+        isSelected = UI::Checkbox("Select Community \\$fc0Speedrun", isSelected);
         if (isSelected) g_SpeedrunWindow.selectedCampaigns.InsertLast(CommunitySpeedrun);
 
         UI::SameLine();

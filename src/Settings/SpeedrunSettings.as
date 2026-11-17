@@ -43,10 +43,10 @@ namespace PluginSettings
     {
         string speedrunPath = IO::FromUserGameFolder("Speedruns");
 
-        // SwitcherPreloadCache = UI::WhiteCheckbox("Preload Cache", SwitcherPreloadCache);
-        SwitcherAutoloadNextMap = UI::WhiteCheckbox("Auto skip to Next Map (recommended)", SwitcherAutoloadNextMap);
-        HideUIOnLoadMap = UI::WhiteCheckbox("Hide Openplanet UI on map loading", HideUIOnLoadMap);
-        WriteSpeedrunLog = UI::WhiteCheckbox("Output speedruns log files", WriteSpeedrunLog);
+        // SwitcherPreloadCache = UI::Checkbox("Preload Cache", SwitcherPreloadCache);
+        SwitcherAutoloadNextMap = UI::Checkbox("Auto skip to Next Map (recommended)", SwitcherAutoloadNextMap);
+        HideUIOnLoadMap = UI::Checkbox("Hide Openplanet UI on map loading", HideUIOnLoadMap);
+        WriteSpeedrunLog = UI::Checkbox("Output speedruns log files", WriteSpeedrunLog);
         UI::SetPreviousTooltip("You can find your log files in " + speedrunPath);
 
         if (UI::CyanButton(Icons::FolderO + " Open Speedruns folder")) {
@@ -54,7 +54,7 @@ namespace PluginSettings
             OpenExplorerPath(speedrunPath);
         }
 
-        CreateReplayOnFinishMap = UI::WhiteCheckbox("Create replays", CreateReplayOnFinishMap);
+        CreateReplayOnFinishMap = UI::Checkbox("Create replays", CreateReplayOnFinishMap);
 
         if ((g_LiveSplit !is null && g_LiveSplit.connected) || SwitcherAutoloadNextMap)
         {

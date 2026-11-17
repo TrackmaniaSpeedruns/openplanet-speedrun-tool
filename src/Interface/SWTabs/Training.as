@@ -28,7 +28,7 @@ class TrainingSelectSWTab : SWTab
                 break;
             }
         }
-        isSelected = UI::WhiteCheckbox("Select Training Campaign", isSelected);
+        isSelected = UI::Checkbox("Select Training Campaign", isSelected);
         if (isSelected) g_SpeedrunWindow.selectedCampaigns.InsertLast(TrainingCampaignSummary);
 
         UI::SameLine();

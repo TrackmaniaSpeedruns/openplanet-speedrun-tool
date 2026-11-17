@@ -47,7 +47,7 @@ namespace IfaceRender
                 break;
             }
         }
-        isSelected = UI::WhiteCheckbox("###SelectCampaign"+campaign.id, isSelected);
+        isSelected = UI::Checkbox("###SelectCampaign"+campaign.id, isSelected);
         if (isSelected) g_SpeedrunWindow.selectedCampaigns.InsertLast(campaign);
     }
 }
